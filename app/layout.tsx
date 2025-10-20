@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Menu from "@/components/Menu";
+import SideMenu from "@/components/Menu/SideMenu";
+import Menu from "@/components/Menu/Menu";
 
 
 const geistSans = Geist({
@@ -25,12 +26,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
           <div className="bg-[#17253E] h-full">
-              <div className="h-[50px]">
-
-              </div>
+              <Menu />
               <div className="flex flex-col-reverse sm:flex-row sm:h-[calc(100vh-50px)]" >
-                <Menu />
-                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg p-4 h-[calc(100vh-100px)]">
+                <SideMenu />
+                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg p-4 h-[calc(100dvh-100px)] sm:h-full">
                   {children}
                 </div>
               </div>
