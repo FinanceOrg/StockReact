@@ -15,11 +15,11 @@ export default function SideMenuElement({ name, icon: Icon, isActive, onClick }:
                 isActive ? "" : "rounded-lg text-[#A4ACB9] hover:bg-[#1E3258]"
             }`}
         >
-            <div className={`size-10 sm:size-12 flex items-center justify-center rounded-lg ${
+            <div className={`size-10 flex items-center justify-center rounded-lg ${
                 isActive ? "bg-white" : "text-gray-500"
             }`}>
                 <Icon
-                    className={`size-8 sm:size-10`}
+                    className="size-8"
                 />
             </div>
             <div

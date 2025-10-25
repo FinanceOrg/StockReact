@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SideMenu from "@/components/Menu/SideMenu";
 import Menu from "@/components/Menu/Menu";
+import React from "react";
 
 
 const geistSans = Geist({
@@ -14,7 +15,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,15 +25,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-          <div className="bg-[#17253E] h-full">
-              <Menu />
-              <div className="flex flex-col-reverse sm:flex-row sm:h-[calc(100vh-50px)]" >
-                <SideMenu />
-                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg p-4 h-[calc(100dvh-100px)] sm:h-full">
-                  {children}
-                </div>
-              </div>
-          </div>
+        {children}
       </body>
     </html>
   );

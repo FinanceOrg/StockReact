@@ -11,7 +11,8 @@ export default function SideMenu() {
     const [active, setActive] = React.useState("Home");
 
     return (
-        <div className="bg-[#17253E] h-[50px] sm:h-auto sm:w-[90px] flex sm:flex-col gap-4 items-center justify-center sm:justify-start sm:pt-4">
+        <div className="fixed sm:static bottom-0 w-full bg-[#17253E] h-[50px] sm:h-auto sm:w-[80px] flex
+        sm:flex-col gap-4 items-center justify-center sm:justify-start sm:pt-4">
             <SideMenuElement
                 name="Home"
                 icon={HomeLogo}
