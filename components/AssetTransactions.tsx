@@ -1,7 +1,21 @@
 import clsx from "clsx";
 
+type AssetTransactionHeader = {
+    name: string;
+    class: string;
+}
+
+type AssetTransactionData = {
+    id: number;
+    name: string;
+    value: number;
+    date: string;
+    category: string;
+    type: string;
+}
+
 export default function AssetTransactions() {
-    const header = [
+    const header: AssetTransactionHeader[] = [
         { name: 'ID', class: 'col-span-1'},
         { name: 'Name', class: 'col-span-2'},
         { name: 'Amount', class: 'col-span-2'},
@@ -10,16 +24,14 @@ export default function AssetTransactions() {
         { name: 'Type', class: 'col-span-2'},
     ]
 
-
-
-    const data = [
-        {id: 1, name: 'lorem', value: 40000, date: '2024.05.13 13:00', category: 'myCategory', type: 'Type'},
-        {id: 1, name: 'lorem', value: 40000, date: '2024.05.13 13:00', category: 'myCategory', type: 'Type'},
-        {id: 1, name: 'lorem', value: 40000, date: '2024.05.13 13:00', category: 'myCategory', type: 'Type'},
-        {id: 1, name: 'lorem', value: 40000, date: '2024.05.13 13:00', category: 'myCategory', type: 'Type'},
+    const data: AssetTransactionData[] = [
+        {id: 1, name: 'lorem', value: 4000000, date: '2024.05.13 13:00', category: 'myCategory', type: 'Type'},
+        {id: 2, name: 'lorem', value: 970, date: '2024.03.24 12:59', category: 'myCategory', type: 'Type'},
+        {id: 3, name: 'lorem', value: 235845, date: '2024.02.11 08:00', category: 'myCategory', type: 'Type'},
+        {id: 4, name: 'lorem', value: 19563, date: '2024.02.11 07:59', category: 'myCategory', type: 'Type'},
     ]
 
-    const dataKeys = Object.keys(data[0])
+    const dataKeys = Object.keys(data[0]) as (keyof AssetTransactionData)[]
     // 'Category', 'Type'];
     return(
         <div>
