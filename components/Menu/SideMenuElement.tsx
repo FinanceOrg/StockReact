@@ -1,16 +1,17 @@
 import React, {ComponentType, SVGProps} from "react";
+import Link from "next/link";
 
 type SideMenuElementProps = {
     name: string;
     icon: ComponentType<SVGProps<SVGSVGElement>>;
     isActive?: boolean;
-    onClick?: () => void;
+    href: string;
 };
 
-export default function SideMenuElement({ name, icon: Icon, isActive, onClick }: SideMenuElementProps) {
+export default function SideMenuElement({ name, icon: Icon, isActive, href }: SideMenuElementProps) {
     return (
-        <div
-            onClick={onClick}
+        <Link
+            href={href}
             className={`group cursor-pointer flex flex-col items-center justify-center w-[60px] ${
                 isActive ? "" : "rounded-lg text-[#A4ACB9] hover:bg-[#1E3258]"
             }`}
@@ -29,7 +30,7 @@ export default function SideMenuElement({ name, icon: Icon, isActive, onClick }:
             >
                 {name}
             </div>
-        </div>
+        </Link>
     );
 }
 
