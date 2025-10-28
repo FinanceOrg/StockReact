@@ -29,7 +29,7 @@ export default function UserLayout({
             <Menu title={title}/>
             <div className="flex flex-col-reverse sm:flex-row sm:h-[calc(100vh-60px)]" >
                 <SideMenu />
-                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg pt-4 px-4 pb-[20px] sm:pb-0 mb-[50px] sm:mb-0 min-h-[calc(100dvh-60px)] sm:h-full">
+                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg pt-4 px-4 pb-[20px] sm:pb-0 mb-[50px] sm:mb-0 min-h-[calc(100dvh-60px)] sm:h-full overflow-x-hidden">
                     { title && <h1 className="text-white text-4xl mb-10">{title}</h1>}
                     {children}
                 </div>
