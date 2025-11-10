@@ -1,8 +1,14 @@
 import clsx from "clsx";
 
-type AssetTransactionHeader = {
+type AssetType = 'id' | 'name' | 'value' | 'date' | 'category' | 'type';
+
+type AssetTransaction = {
+    value: string;
     name: string;
+    headerClass: string;
+    dataClass: string;
     class: string;
+    visibleInMobile: boolean;
 }
 
 type AssetTransactionData = {
@@ -15,13 +21,13 @@ type AssetTransactionData = {
 }
 
 export default function AssetTransactions() {
-    const header: AssetTransactionHeader[] = [
-        { name: 'ID', class: 'col-span-1'},
-        { name: 'Name', class: 'col-span-2'},
-        { name: 'Amount', class: 'col-span-2'},
-        { name: 'Transaction date', class: 'col-span-2'},
-        { name: 'Category', class: 'col-span-2'},
-        { name: 'Type', class: 'col-span-2'},
+    const meta: AssetTransaction[] = [
+        { value: 'id', name: 'ID', headerClass: '', dataClass: '' ,class: 'basis-1/11', visibleInMobile: false },
+        { value: 'name', name: 'Name', headerClass: '', dataClass: 'basis-1/2 font-bold sm:font-normal' ,class: 'sm:basis-2/11', visibleInMobile: true  },
+        { value: 'value', name: 'Amount', headerClass: '', dataClass: 'basis-1/2 text-right' ,class: 'sm:basis-2/11', visibleInMobile: true  },
+        { value: 'date', name: 'Transaction date', headerClass: '', dataClass: 'basis-full' ,class: 'sm:basis-2/11', visibleInMobile: true  },
+        { value: 'category', name: 'Category', headerClass: '', dataClass: '' ,class: 'basis-2/11', visibleInMobile: false  },
+        { value: 'type', name: 'Type', headerClass: '', dataClass: '' ,class: 'basis-2/11', visibleInMobile: false  },
     ]
 
     const data: AssetTransactionData[] = [
@@ -31,33 +37,42 @@ export default function AssetTransactions() {
         {id: 4, name: 'lorem', value: 19563, date: '2024.02.11 07:59', category: 'myCategory', type: 'Type'},
     ]
 
-    const dataKeys = Object.keys(data[0]) as (keyof AssetTransactionData)[]
-    // 'Category', 'Type'];
+    //const dataKeys = Object.keys(data[0]) as (keyof AssetTransactionData)[]
     return(
-        <div>
-            <div className="grid grid-cols-11 bg-white rounded-t-lg border-b border-gray-300">
+        <div className="mb-4">
+            <div className="hidden sm:flex bg-white rounded-t-lg border-b border-gray-300 justify-center px-2">
                 {
-                    header.map((item, index) => (
+                    meta.map((item, index) => (
                         <div key={index} className={clsx(
-                            "m-auto py-2",
-                            item.class
+                            "py-2 text-center",
+                            item.class,
+                            item.headerClass
                         )}
                         >{ item.name }</div>
                     ))
                 }
             </div>
-            <div className="grid grid-cols-11 bg-white/90 rounded-b-lg">
-                {
-                    data.map((row) => (
-                        dataKeys.map((key, index) => (
-                            <div key={key} className={clsx(
-                                'm-auto py-2',
-                                index === 0 ? 'col-span-1' : 'col-span-2',
-                            )}> { row[key] } </div>
-                        ))
-                    ))
-                }
-            </div>
+            {
+                data.map((row, i) => (
+                    <div key={row.id} className={clsx(
+                        "flex flex-wrap sm:flex-nowrap py-2 justify-between px-4 sm:px-2 bg-white",
+                        "sm:bg-white/90 hover:bg-white/70 transition duration-400",
+                        i === data.length - 1 && "rounded-b-lg",
+                        i === 0 && "rounded-t-lg sm:rounded-t-none"
+                    )}>
+                        {
+                            meta.map((meta, index) => (
+                                <div key={`${meta.value}-${row.id}`} className={clsx(
+                                    'sm:text-center sm:justify-center',
+                                    meta.class,
+                                    meta.dataClass,
+                                    meta.visibleInMobile ? '' : 'hidden sm:flex'
+                                )}> { meta.value === 'value' ? `${row[meta.value]} Ft` : row[meta.value] } </div>
+                            ))
+                        }
+                    </div>
+                ))
+            }
         </div>
     )
 }
