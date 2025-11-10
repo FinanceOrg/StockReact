@@ -67,7 +67,7 @@ export default function AssetTransactions() {
                                     meta.class,
                                     meta.dataClass,
                                     meta.visibleInMobile ? '' : 'hidden sm:flex'
-                                )}> { meta.value === 'value' ? `${row[meta.value]} Ft` : row[meta.value] } </div>
+                                )}> { meta.value === 'value' ? `${row[meta.value]} Ft` : row[meta.value as AssetType] } </div>
                             ))
                         }
                     </div>
