@@ -15,8 +15,9 @@ type StockCardProps = {
 }
 export default function StockCard({color, image, additionalTitle, amount, text, type, href}: StockCardProps) {
     return(
-        <Link href={href}>
-            <Card className="sm:max-w-[750px] cursor-pointer">
+
+        <Card className="sm:max-w-[750px] cursor-pointer">
+            <Link href={href}>
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-y-4">
                     <div className={clsx("flex items-center")}>
                         <img
@@ -36,7 +37,7 @@ export default function StockCard({color, image, additionalTitle, amount, text, 
                     <div style={{ color }} className="text-lg font-bold">{text}</div>
                     <StockCardLabel type={type}/>
                 </div>
-            </Card>
-        </Link>
+            </Link>
+        </Card>   
     )
 }
