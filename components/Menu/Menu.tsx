@@ -1,5 +1,5 @@
 import NotificationLogo from '@/icons/notification.svg'
-import Link from "next/link";
+import Logo from '../Logo';
 
 type MenuProps = {
     title: string
@@ -7,10 +7,8 @@ type MenuProps = {
 
 export default function Menu({ title }: MenuProps) {
     return(
-        <div className="h-[60px] flex items-center justify-between px-4">
-            <Link href="/" className="text-white font-bold text-lg cursor-pinter select-none" style={{ textShadow: "2px 2px 4px rgba(255,255,255,0.5)"}}>
-                STOCK
-            </Link>
+        <div className="h-[65px] flex items-center justify-between px-4">
+            <Logo size='size-8' href="/" />
             <div className="text-white text-xl font-bold">{title}</div>
             <div className="relative cursor-pointer">
                 <div className="size-2 bg-red-500 absolute right-1 top-0.5 rounded-full"></div>

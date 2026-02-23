@@ -35,9 +35,9 @@ export default function UserLayout({
     return (
         <div className="bg-[#17253E] h-full">
             <Menu title={menuTitle}/>
-            <div className="flex flex-col-reverse sm:flex-row sm:h-[calc(100vh-60px)]" >
+            <div className="flex flex-col-reverse sm:flex-row sm:h-[calc(100vh-65px)]" >
                 <SideMenu />
-                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg pt-4 px-4 pb-[20px] sm:pb-0 mb-[50px] sm:mb-0 min-h-[calc(100dvh-60px)] sm:h-full overflow-x-hidden">
+                <div className="bg-linear-to-b from-[#6756FF] to-[#9DE5FF] w-full sm:rounded-tl-lg pt-4 px-4 pb-[20px] mb-[50px] sm:mb-0 min-h-[calc(100dvh-65px)] sm:h-full overflow-x-hidden">
                     <AnimatePresence mode="wait">
                         <motion.div
                             className="w-full"
