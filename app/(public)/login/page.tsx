@@ -13,17 +13,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import AuthLayout from "@/layouts/AuthLayout"
 import { Password } from "@/components/ui/password"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Logo from "@/components/Logo"
-
-const loginSchema = z.object({
-    email: z.string().min(1, "Email is required").email("Invalid email address"),
-    password: z.string().min(1, "Password is required"),
-})
+import { authClient } from "@/clients/AuthClient"
+import { loginSchema } from "@/validators/auth.schema"
 
 type LoginForm = z.infer<typeof loginSchema>
 
@@ -51,25 +47,21 @@ export default function LoginPage() {
     const [fetching, setFetching] = useState<boolean>(false)
 
     async function onSubmit(data: LoginForm) {
+      try {
         setFetching(true)
         setAuthError(null)
 
-        const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        })
-        setFetching(false)
-        if (!res.ok) {
-            setAuthError("Invalid email or password")
-            return
-        }
+        await authClient.login(data)
 
         router.push("/")
+      } catch (error: any) {
+        setAuthError(error.message || "Invalid email or password")
+      } finally {
+        setFetching(false)
+      }
     }
 
   return (
-    <AuthLayout>
       <div className="bg-white min-w-[500px] flex-col rounded-2xl p-8">
         <div className="flex items-center gap-x-3 mb-5">
           <Logo />
@@ -128,6 +120,5 @@ export default function LoginPage() {
         </div>
         
       </div>
-    </AuthLayout>
   )
 }

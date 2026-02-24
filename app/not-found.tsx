@@ -1,10 +1,18 @@
 // app/not-found.tsx
 import Link from "next/link";
-import UserLayout from "@/layouts/UserLayout";
+import PublicLayout from './(public)/layout'
+import ProtectedLayout from './(protected)/layout'
+import { cookies } from "next/headers";
 
-export default function NotFound() {
+
+export default async function NotFound() {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('token')?.value
+    const isAuthenticated = !!token
+    const Layout = isAuthenticated ? ProtectedLayout : PublicLayout
+
     return (
-        <UserLayout>
+        <Layout>
             <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
                 <h1 className="text-3xl font-bold mb-2">404 — Page not found</h1>
                 <p className="text-gray-600 mb-6">
@@ -17,6 +25,6 @@ export default function NotFound() {
                     Back to Home
                 </Link>
             </div>
-        </UserLayout>
+        </Layout>
     );
 }

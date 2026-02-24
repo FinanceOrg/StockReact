@@ -1,4 +1,4 @@
-import UserLayout from "@/layouts/UserLayout";
+import UserLayout from "@/app/(protected)/layout";
 import RawChart from "@/components/SampleChart";
 import AssetTransactions from "@/components/AssetTransactions";
 

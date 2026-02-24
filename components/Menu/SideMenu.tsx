@@ -8,15 +8,13 @@ import MoneyLogo from "@/icons/money.svg";
 import SideMenuElement from "@/components/Menu/SideMenuElement";
 import {usePathname, useRouter} from "next/navigation";
 import LogOut from "@/icons/log-out.svg"
+import { authClient } from "@/clients/AuthClient";
 
 export default function SideMenu() {
     const router = useRouter()
 
     const handleLogout = async () => {
-        const res = await fetch("/api/auth/logout", {
-            method: "POST",
-        })
-
+        await authClient.logout()
         router.replace("/login")
     }
 
