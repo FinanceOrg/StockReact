@@ -28,17 +28,13 @@ export default async function UserLayout({
   pageTitle = "",
   children,
 }: UserLayoutProps) {
-    const data = await getCurrentUser()
-    console.log("got data", data)
-/* 
-  async function submit() {
-    "use server"
-    const dataa= await getCurrentUser()
-    const result = await dataa.json()
+    let user = null
+    try {
+      user = await getCurrentUser()
+    } catch (e) {
 
-    console.log(result)
-    console.log("runs on server")
-  } */
+    }
+
 
   return (
     <div className="bg-[#17253E] h-full">
