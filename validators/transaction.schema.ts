@@ -4,7 +4,7 @@ export const createTransactionSchema = z.object({
   name: z.string().min(1, "Transaction name is required"),
   amount: z.number().positive("Amount must be positive"),
   type: z.enum(["expense", "income"], {
-    errorMap: () => ({ message: "Type must be either 'expense' or 'income'" }),
+    message: "Type must be either 'expense' or 'income'",
   }),
   date: z.string().datetime("Invalid date format"),
   assetId: z.number().int().positive("Asset ID must be positive"),
