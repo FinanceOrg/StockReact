@@ -11,7 +11,7 @@ export class AuthClient {
     })
 
     if (!res.ok) throw new Error(res.status === 401 ? 'Invalid email or password' : 'Something went wrong!')
-    return res.json()
+    return await res.json()
   }
 
   async logout() {
@@ -23,7 +23,7 @@ export class AuthClient {
       throw new Error("Logout failed")
     }
 
-    return res.json()
+    return await res.json()
   }
 }
 

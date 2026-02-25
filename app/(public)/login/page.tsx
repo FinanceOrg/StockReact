@@ -56,7 +56,6 @@ export default function LoginPage() {
         router.push("/")
       } catch (error: any) {
         setAuthError(error.message || "Invalid email or password")
-      } finally {
         setFetching(false)
       }
     }

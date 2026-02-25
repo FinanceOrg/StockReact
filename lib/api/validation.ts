@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { NextResponse } from "next/server"
-import { ValidationResult, ValidationErrorResponse } from "@/types/api"
+import { ValidationResult, ValidationErrorResponse, TokenResult } from "@/types/api"
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies"
+import { cookies } from "next/headers"
 
 export function validate<S extends z.ZodTypeAny>(
   schema: S,
@@ -38,4 +40,15 @@ export function validate<S extends z.ZodTypeAny>(
     success: true,
     data: parsed.data,
   }
+}
+
+export async function getToken(): Promise<string> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("token")?.value
+
+  if (!token) {
+    throw Error("Token missing!")
+  }
+
+  return token
 }

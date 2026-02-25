@@ -16,3 +16,16 @@ export type ValidationFailure = {
 export type ValidationResult<T> =
   | ValidationSuccess<T>
   | ValidationFailure
+
+
+export type TokenSuccess = {
+  success: true
+  data: string
+}
+
+export type TokenFailure = {
+  success: false
+  response: Response
+}
+
+export type TokenResult = TokenSuccess | TokenFailure

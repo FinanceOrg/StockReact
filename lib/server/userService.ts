@@ -1,4 +1,5 @@
 import { cookies } from "next/headers"
+import { getToken } from "../api/validation"
 
 interface User {
   id: string
@@ -9,10 +10,10 @@ interface User {
 
 export async function getCurrentUser(): Promise<User> {
   const cookieStore = await cookies()
-  const token = cookieStore.get("token")?.value
+  const token = await getToken()
   const email = cookieStore.get("email")?.value
 
-  if (!token || !email) {
+  if (!email) {
     throw new Error("Unauthorized")
   }
 
@@ -22,7 +23,6 @@ export async function getCurrentUser(): Promise<User> {
     },
     cache: "no-store",
   })
-  console.log(backendRes)
 
   if (!backendRes.ok) {
     throw new Error("Backend error")
