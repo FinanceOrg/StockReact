@@ -61,7 +61,7 @@ export default function LoginPage() {
     }
 
   return (
-      <div className="bg-white min-w-[500px] flex-col rounded-2xl p-8">
+      <div className="bg-white w-11/12 sm:w-[500px] flex-col rounded-2xl p-8">
         <div className="flex items-center gap-x-3 mb-5">
           <Logo />
           <div className="mt-1 font-bold text-3xl cursor-pinter select-none" style={{ textShadow: "2px 2px 4px rgba(23, 37, 62,0.5)"}}>
