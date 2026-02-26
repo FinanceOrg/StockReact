@@ -31,7 +31,6 @@ export async function POST(req: Request) {
       path: "/",
     })
 
-    // TODO: Remove after backend can identify login user
     response.cookies.set("email", parsed.data.email, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -1,7 +1,7 @@
 import { LoginInput } from "@/validators/auth.schema"
 
 export class AuthClient {
-  private baseUrl = '/api/auth'
+  private baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth`
 
   async login<T>(data: LoginInput): Promise<T> {
     const res = await fetch(`${this.baseUrl}/login`, {

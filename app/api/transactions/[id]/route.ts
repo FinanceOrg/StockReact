@@ -1,9 +1,5 @@
-import { getToken, validate } from "@/lib/api/validation"
-import { updateTransactionSchema } from "@/validators/transaction.schema"
+import { transactionService } from "@/lib/services/transaction.service"
 import { NextResponse } from "next/server"
-import { getDefaultServerError, getHeaders } from "@/lib/api/helper"
-
-const baseUrl = process.env.API_BASE_URL
 
 export async function GET(
   req: Request,
@@ -11,25 +7,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
-
-    const backendRes = await fetch(`${baseUrl}/transactions/${id}`, {
-      method: "GET",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Transaction not found" },
-        { status: backendRes.status }
-      )
-    }
-
-    const transaction = await backendRes.json()
+    const transaction = await transactionService.getById(id)
     return NextResponse.json(transaction, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch transaction"
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -39,30 +27,22 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
     const body = await req.json()
-
-    const parsed = validate(updateTransactionSchema, body)
-    if (!parsed.success) {
-      return parsed.response
-    }
-
-    const headers = getHeaders(token, false)
-    const backendRes = await fetch(`${baseUrl}/transactions/${id}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(parsed.data),
-    })
-
-    if (!backendRes.ok) {
-      const errorData = await backendRes.json()
-      return NextResponse.json(errorData, { status: backendRes.status })
-    }
-
-    const transaction = await backendRes.json()
+    const transaction = await transactionService.update(id, body)
     return NextResponse.json(transaction, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to update transaction"
+
+    if (message.includes("Validation failed")) {
+      return NextResponse.json({ error: message }, { status: 400 })
+    }
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -72,26 +52,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
+    const result = await transactionService.delete(id)
+    return NextResponse.json(result, { status: 200 })
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to delete transaction"
 
-    const backendRes = await fetch(`${baseUrl}/transactions/${id}`, {
-      method: "DELETE",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Failed to delete transaction" },
-        { status: backendRes.status }
-      )
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
     }
 
-    return NextResponse.json(
-      { success: true, message: "Transaction deleted successfully" },
-      { status: 200 }
-    )
-  } catch (error) {
-    return getDefaultServerError()
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

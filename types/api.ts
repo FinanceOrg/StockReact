@@ -28,4 +28,9 @@ export type TokenFailure = {
   response: Response
 }
 
+export type DeleteResponse = {
+  success: boolean
+  message: string
+}
+
 export type TokenResult = TokenSuccess | TokenFailure

@@ -1,39 +1,44 @@
+import { DeleteResponse } from "@/types/api"
+import { Transaction } from "@/types/domain"
 import { CreateTransactionInput, UpdateTransactionInput } from "@/validators/transaction.schema"
-
-export interface Transaction {
-  id: string
-  name: string
-  amount: number
-  type: "expense" | "income"
-  date: string
-  assetId: number
-  categoryId: number
-  userId: number
-  createdAt?: string
-  updatedAt?: string
-}
 
 export class TransactionClient {
   private baseUrl = "/api/transactions"
+
+  private getFetchOptions(): RequestInit {
+    return {
+      credentials: "include", // Include cookies for authentication
+    }
+  }
 
   async index(): Promise<Transaction[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to fetch transactions")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to fetch transactions")
+    }
+
+    return res.json()
   }
 
   async show<T extends Transaction = Transaction>(id: string): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Transaction not found")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Transaction not found")
+    }
+
+    return res.json()
   }
 
   async create<T extends Transaction = Transaction>(
@@ -43,13 +48,15 @@ export class TransactionClient {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to create transaction")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to create transaction")
     }
-    return await res.json()
+
+    return res.json()
   }
 
   async update<T extends Transaction = Transaction>(
@@ -60,23 +67,30 @@ export class TransactionClient {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to update transaction")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to update transaction")
     }
-    return await res.json()
+
+    return res.json()
   }
 
-  async delete(id: string): Promise<{ success: boolean; message: string }> {
+  async delete(id: string): Promise<DeleteResponse> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to delete transaction")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to delete transaction")
+    }
+
+    return res.json()
   }
 }
 

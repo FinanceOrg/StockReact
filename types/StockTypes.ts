@@ -1,1 +1,0 @@
-export type StockType = "stock" | "cash" | "bank"

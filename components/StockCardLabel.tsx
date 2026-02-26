@@ -1,8 +1,5 @@
-import {StockType} from "@/types/StockTypes";
-
-
 type StockCardLabelProps = {
-    type: StockType
+    type: string
 }
 
 export default function StockCardLabel({type}:StockCardLabelProps) {

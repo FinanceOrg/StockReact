@@ -1,39 +1,44 @@
+import { DeleteResponse } from "@/types/api"
+import { Asset } from "@/types/domain"
 import { CreateAssetInput, UpdateAssetInput } from "@/validators/asset.schema"
-
-export interface Asset {
-  id: string
-  name: string
-  value: number
-  currency: string
-  description?: string
-  userId: number
-  categoryId: number
-  vendorId: number
-  createdAt?: string
-  updatedAt?: string
-}
 
 export class AssetClient {
   private baseUrl = "/api/assets"
+
+  private getFetchOptions(): RequestInit {
+    return {
+      credentials: "include", // Include cookies for authentication
+    }
+  }
 
   async index(): Promise<Asset[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to fetch assets")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to fetch assets")
+    }
+
+    return res.json()
   }
 
   async show<T extends Asset = Asset>(id: string): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Asset not found")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Asset not found")
+    }
+
+    return res.json()
   }
 
   async create<T extends Asset = Asset>(data: CreateAssetInput): Promise<T> {
@@ -41,13 +46,15 @@ export class AssetClient {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to create asset")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to create asset")
     }
-    return await res.json()
+
+    return res.json()
   }
 
   async update<T extends Asset = Asset>(
@@ -58,37 +65,45 @@ export class AssetClient {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to update asset")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to update asset")
     }
-    return await res.json()
+
+    return res.json()
   }
 
-  async delete(id: string): Promise<{ success: boolean; message: string }> {
+  async delete(id: string): Promise<DeleteResponse> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to delete asset")
-    return await res.json()
-  }
-
-  async recalculate(id: string): Promise<{ success: boolean; message: string }> {
-    const res = await fetch(`${this.baseUrl}/${id}/recalculate`, {
-        method: "POST"
-      }
-    )
-
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to update asset")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to delete asset")
     }
 
-    return await res.json()
+    return res.json()
+  }
+
+  async recalculate(id: string): Promise<any> {
+    const res = await fetch(`${this.baseUrl}/${id}/recalculate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
+    })
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to recalculate asset")
+    }
+
+    return res.json()
   }
 }
 

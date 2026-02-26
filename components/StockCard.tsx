@@ -10,7 +10,7 @@ type StockCardProps = {
     additionalTitle?: string
     amount: number
     text: string
-    type: StockType
+    type: string
     href: string
 }
 export default function StockCard({color, image, additionalTitle, amount, text, type, href}: StockCardProps) {

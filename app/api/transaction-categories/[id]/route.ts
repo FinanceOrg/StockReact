@@ -1,9 +1,5 @@
-import { getToken, validate } from "@/lib/api/validation"
-import { updateTransactionCategorySchema } from "@/validators/transaction-category.schema"
+import { transactionCategoryService } from "@/lib/services/transaction-category.service"
 import { NextResponse } from "next/server"
-import { getDefaultServerError, getHeaders } from "@/lib/api/helper"
-
-const baseUrl = process.env.API_BASE_URL
 
 export async function GET(
   req: Request,
@@ -11,25 +7,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
-
-    const backendRes = await fetch(`${baseUrl}/transaction-categories/${id}`, {
-      method: "GET",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Transaction category not found" },
-        { status: backendRes.status }
-      )
-    }
-
-    const category = await backendRes.json()
+    const category = await transactionCategoryService.getById(id)
     return NextResponse.json(category, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch transaction category"
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -39,30 +27,22 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
     const body = await req.json()
-
-    const parsed = validate(updateTransactionCategorySchema, body)
-    if (!parsed.success) {
-      return parsed.response
-    }
-
-    const headers = getHeaders(token, false)
-    const backendRes = await fetch(`${baseUrl}/transaction-categories/${id}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(parsed.data),
-    })
-
-    if (!backendRes.ok) {
-      const errorData = await backendRes.json()
-      return NextResponse.json(errorData, { status: backendRes.status })
-    }
-
-    const category = await backendRes.json()
+    const category = await transactionCategoryService.update(id, body)
     return NextResponse.json(category, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to update transaction category"
+
+    if (message.includes("Validation failed")) {
+      return NextResponse.json({ error: message }, { status: 400 })
+    }
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -72,26 +52,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
+    const result = await transactionCategoryService.delete(id)
+    return NextResponse.json(result, { status: 200 })
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to delete transaction category"
 
-    const backendRes = await fetch(`${baseUrl}/transaction-categories/${id}`, {
-      method: "DELETE",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Failed to delete transaction category" },
-        { status: backendRes.status }
-      )
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
     }
 
-    return NextResponse.json(
-      { success: true, message: "Transaction category deleted successfully" },
-      { status: 200 }
-    )
-  } catch (error) {
-    return getDefaultServerError()
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

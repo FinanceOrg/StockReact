@@ -1,60 +1,30 @@
-import { getHeaders, getDefaultServerError } from "@/lib/api/helper"
-import { getToken, validate } from "@/lib/api/validation"
-import { createVendorSchema } from "@/validators/vendor.schema"
+import { assetVendorService } from "@/lib/services/asset-vendor.service"
 import { NextResponse } from "next/server"
 
-const baseUrl = process.env.API_BASE_URL
-
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const token = await getToken()
-    const headers = getHeaders(token, false)
-
-    const backendRes = await fetch(`${baseUrl}/asset-vendors`, {
-      method: "GET",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch vendors" },
-        { status: backendRes.status }
-      )
-    }
-
-    const vendors = await backendRes.json()
+    const vendors = await assetVendorService.getAll()
     return NextResponse.json(vendors, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch vendors"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const token = await getToken()
     const body = await req.json()
-
-    const parsed = validate(createVendorSchema, body)
-    if (!parsed.success) {
-      return parsed.response
-    }
-
-    const headers = getHeaders(token, true)
-
-    const backendRes = await fetch(`${baseUrl}/asset-vendors`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(parsed.data),
-    })
-
-    if (!backendRes.ok) {
-      const errorData = await backendRes.json()
-      return NextResponse.json(errorData, { status: backendRes.status })
-    }
-
-    const vendor = await backendRes.json()
+    const vendor = await assetVendorService.create(body)
     return NextResponse.json(vendor, { status: 201 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to create vendor"
+
+    if (message.includes("Validation failed")) {
+      return NextResponse.json({ error: message }, { status: 400 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

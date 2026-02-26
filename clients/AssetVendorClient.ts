@@ -1,56 +1,63 @@
+import { DeleteResponse } from "@/types/api"
+import { AssetVendor } from "@/types/domain"
 import { CreateVendorInput, UpdateVendorInput } from "@/validators/vendor.schema"
-
-export interface Vendor {
-  id: string
-  name: string
-  style: {
-    color: string
-    icon: string
-  }
-  description?: string
-  userId: number
-  createdAt?: string
-  updatedAt?: string
-}
 
 export class AssetVendorClient {
   private baseUrl = "/api/asset-vendors"
 
-  async index(): Promise<Vendor[]> {
+  private getFetchOptions(): RequestInit {
+    return {
+      credentials: "include", // Include cookies for authentication
+    }
+  }
+
+  async index(): Promise<AssetVendor[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to fetch vendors")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to fetch vendors")
+    }
+
+    return res.json()
   }
 
-  async show<T extends Vendor = Vendor>(id: string): Promise<T> {
+  async show<T extends AssetVendor = AssetVendor>(id: string): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Vendor not found")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Vendor not found")
+    }
+
+    return res.json()
   }
 
-  async create<T extends Vendor = Vendor>(data: CreateVendorInput): Promise<T> {
+  async create<T extends AssetVendor = AssetVendor>(data: CreateVendorInput): Promise<T> {
     const res = await fetch(this.baseUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to create vendor")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to create vendor")
     }
-    return await res.json()
+
+    return res.json()
   }
 
-  async update<T extends Vendor = Vendor>(
+  async update<T extends AssetVendor = AssetVendor>(
     id: string,
     data: UpdateVendorInput
   ): Promise<T> {
@@ -58,23 +65,30 @@ export class AssetVendorClient {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      ...this.getFetchOptions(),
     })
 
     if (!res.ok) {
-      const error = await res.json()
-      throw new Error(error.message || "Failed to update vendor")
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to update vendor")
     }
-    return await res.json()
+
+    return res.json()
   }
 
-  async delete(id: string): Promise<{ success: boolean; message: string }> {
+  async delete(id: string): Promise<DeleteResponse> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
     })
 
-    if (!res.ok) throw new Error("Failed to delete vendor")
-    return await res.json()
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to delete vendor")
+    }
+
+    return res.json()
   }
 }
 

@@ -1,17 +1,41 @@
 import StockCard from "@/components/StockCard";
 import Card from "@/components/Card";
+import { assetService } from "@/lib/services/asset.service";
+import { getCurrentUser } from "@/lib/server/userService";
+import { assetVendorService } from "@/lib/services/asset-vendor.service";
+import { assetCategoryClient } from "@/clients/AssetCategoryClient";
+import { assetCategoryService } from "@/lib/services/asset-category.service";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser()
+  const vendors = await assetVendorService.getAll()
+  const categories = await assetCategoryService.getAll()
+  const assets = await assetService.getAll()
+  console.log("assets", assets)
+  console.log(vendors, categories)
+
   return (
     <div>
         <Card className="mb-8 flex justify-between items-center sm:w-[400px]">
             <div className="text-2xl">Balance:</div>
-            <div className="text-xl font-bold">{Intl.NumberFormat("hu-HU").format(123456789)} Ft</div>
+            <div className="text-xl font-bold">{Intl.NumberFormat("hu-HU").format(user.totalValue)} Ft</div>
         </Card>
         <div className="flex flex-col gap-y-4">
-            <StockCard href="/assets/1" color="#F7931A" type="stock" amount={12130000} text="Lorem ipsum dolor sit amet, consectetur." image="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Bitcoin_logo.svg/1024px-Bitcoin_logo.svg.png"/>
-            <StockCard href="/assets/2" color="#5EB429" type="bank" amount={12130000} text="Lorem ipsum dolor sit amet, consectetur." image="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/OTP_Bank_logo.svg/2560px-OTP_Bank_logo.svg.png"/>
-            <StockCard href="/assets/3" color="#E82127" type="cash" amount={12130000} additionalTitle="Tesla" text="Lorem ipsum dolor sit amet, consectetur." image="https://www.edigitalagency.com.au/wp-content/uploads/Tesla-logo-red-large-size.png"/>
+            {assets.map((asset) => {
+              
+              return (
+                <StockCard
+                  key={asset.id}
+                  href={`/assets/${asset.id}`}
+                  color={asset.assetCategory?.style?.color || "#000000"}
+                  image={asset.assetVendor?.style?.icon || "https://via.placeholder.com/50"}
+                  amount={asset.value}
+                  text={asset.description || asset.name}
+                  type={asset.assetCategory?.name || ""}
+                  additionalTitle={asset.name}
+                />
+              )
+            })}
         </div>
     </div>
   );

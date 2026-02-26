@@ -1,11 +1,18 @@
 import { cookies } from "next/headers"
 import { getToken } from "../api/validation"
 
+interface Currency {
+  code: string
+  name: string
+  symbol: string
+}
+
 interface User {
   id: string
   email: string
   name: string
-  // adjust to your backend model
+  totalValue: number
+  preferedCurrency: Currency
 }
 
 export async function getCurrentUser(): Promise<User> {
@@ -36,5 +43,12 @@ export async function getCurrentUser(): Promise<User> {
     throw new Error("User not found")
   }
 
-  return user
+    const response = await fetch(`${process.env.API_BASE_URL}/users/${user.id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  })
+
+  return await response.json()
 }

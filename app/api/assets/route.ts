@@ -1,60 +1,30 @@
-import { getHeaders, getDefaultServerError } from "@/lib/api/helper"
-import { getToken, validate } from "@/lib/api/validation"
-import { createAssetSchema } from "@/validators/asset.schema"
+import { assetService } from "@/lib/services/asset.service"
 import { NextResponse } from "next/server"
 
-const baseUrl = process.env.API_BASE_URL
-
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const token = await getToken()
-    const headers = getHeaders(token, false)
-
-    const backendRes = await fetch(`${baseUrl}/assets`, {
-      method: "GET",
-      headers
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch assets" },
-        { status: backendRes.status }
-      )
-    }
-
-    const assets = await backendRes.json()
+    const assets = await assetService.getAll()
     return NextResponse.json(assets, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch assets"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const token = await getToken()
     const body = await req.json()
-
-    const parsed = validate(createAssetSchema, body)
-    if (!parsed.success) {
-      return parsed.response
-    }
-
-    const headers = getHeaders(token, true)
-
-    const backendRes = await fetch(`${baseUrl}/assets`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(parsed.data),
-    })
-
-    if (!backendRes.ok) {
-      const errorData = await backendRes.json()
-      return NextResponse.json(errorData, { status: backendRes.status })
-    }
-
-    const asset = await backendRes.json()
+    const asset = await assetService.create(body)
     return NextResponse.json(asset, { status: 201 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to create asset"
+
+    if (message.includes("Validation failed")) {
+      return NextResponse.json({ error: message }, { status: 400 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

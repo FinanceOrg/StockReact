@@ -1,9 +1,5 @@
-import { getToken, validate } from "@/lib/api/validation"
-import { updateVendorSchema } from "@/validators/vendor.schema"
+import { assetVendorService } from "@/lib/services/asset-vendor.service"
 import { NextResponse } from "next/server"
-import { getDefaultServerError, getHeaders } from "@/lib/api/helper"
-
-const baseUrl = process.env.API_BASE_URL
 
 export async function GET(
   req: Request,
@@ -11,25 +7,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
-
-    const backendRes = await fetch(`${baseUrl}/asset-vendors/${id}`, {
-      method: "GET",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Vendor not found" },
-        { status: backendRes.status }
-      )
-    }
-
-    const vendor = await backendRes.json()
+    const vendor = await assetVendorService.getById(id)
     return NextResponse.json(vendor, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch vendor"
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -39,30 +27,22 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
     const body = await req.json()
-
-    const parsed = validate(updateVendorSchema, body)
-    if (!parsed.success) {
-      return parsed.response
-    }
-
-    const headers = getHeaders(token, false)
-    const backendRes = await fetch(`${baseUrl}/asset-vendors/${id}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(parsed.data),
-    })
-
-    if (!backendRes.ok) {
-      const errorData = await backendRes.json()
-      return NextResponse.json(errorData, { status: backendRes.status })
-    }
-
-    const vendor = await backendRes.json()
+    const vendor = await assetVendorService.update(id, body)
     return NextResponse.json(vendor, { status: 200 })
   } catch (error) {
-    return getDefaultServerError()
+    const message =
+      error instanceof Error ? error.message : "Failed to update vendor"
+
+    if (message.includes("Validation failed")) {
+      return NextResponse.json({ error: message }, { status: 400 })
+    }
+
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -72,26 +52,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const token = await getToken()
-    const headers = getHeaders(token, false)
+    const result = await assetVendorService.delete(id)
+    return NextResponse.json(result, { status: 200 })
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to delete vendor"
 
-    const backendRes = await fetch(`${baseUrl}/asset-vendors/${id}`, {
-      method: "DELETE",
-      headers,
-    })
-
-    if (!backendRes.ok) {
-      return NextResponse.json(
-        { error: "Failed to delete vendor" },
-        { status: backendRes.status }
-      )
+    if (message.includes("not found")) {
+      return NextResponse.json({ error: message }, { status: 404 })
     }
 
-    return NextResponse.json(
-      { success: true, message: "Vendor deleted successfully" },
-      { status: 200 }
-    )
-  } catch (error) {
-    return getDefaultServerError()
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
