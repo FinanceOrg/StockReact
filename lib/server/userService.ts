@@ -1,5 +1,6 @@
 import { cookies } from "next/headers"
 import { getToken } from "../api/validation"
+import { backendClient } from "../backend/backend.client"
 
 interface Currency {
   code: string
@@ -24,12 +25,7 @@ export async function getCurrentUser(): Promise<User> {
     throw new Error("Unauthorized")
   }
 
-  const backendRes = await fetch(`${process.env.API_BASE_URL}/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  })
+  const backendRes = await backendClient.get(`/users`)
 
   if (!backendRes.ok) {
     throw new Error("Backend error")

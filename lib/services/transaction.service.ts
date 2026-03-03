@@ -1,14 +1,14 @@
 import { backendClient } from "@/lib/backend/backend.client"
 import { DeleteResponse } from "@/types/api"
-import { Transaction } from "@/types/domain"
+import { Transaction, TransactionItem } from "@/types/domain"
 import {
   createTransactionSchema,
   updateTransactionSchema,
 } from "@/validators/transaction.schema"
 
 export class TransactionService {
-  async getAll(): Promise<Transaction[]> {
-    const response = await backendClient.get("/transactions")
+  async getByAssetId(id: string | number): Promise<TransactionItem[]> {
+    const response = await backendClient.get(`assets/${id}/transactions`)
 
     if (!response.ok) {
       throw new Error(`Failed to fetch transactions: ${response.status}`)
@@ -63,7 +63,7 @@ export class TransactionService {
     if (!id) {
       throw new Error("Transaction ID is required")
     }
-
+    console.log("data", data)
     const parsed = updateTransactionSchema.safeParse(data)
     if (!parsed.success) {
       const errors = parsed.error.issues
@@ -71,8 +71,8 @@ export class TransactionService {
         .join("; ")
       throw new Error(`Validation failed: ${errors}`)
     }
-
-    const response = await backendClient.put(
+    
+    const response = await backendClient.patch(
       `/transactions/${id}`,
       parsed.data
     )

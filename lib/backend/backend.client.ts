@@ -18,6 +18,7 @@ export class BackendClient {
 
   private async getHeaders(isJson: boolean = true): Promise<HeadersInit> {
     const token = await getToken()
+
     const headers: HeadersInit = {
       Authorization: `Bearer ${token}`,
     }
@@ -33,13 +34,12 @@ export class BackendClient {
     endpoint: string,
     options: BackendRequestOptions = {}
   ): Promise<Response> {
-    const {
-      method = "GET",
-      body,
-      isJson = true,
-    } = options
+    const { method = "GET", body, isJson = true } = options
 
-    const url = `${this.baseUrl}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`
+    const url = `${this.baseUrl}${
+      endpoint.startsWith("/") ? endpoint : `/${endpoint}`
+    }`
+
     const headers = await this.getHeaders(isJson)
 
     const fetchOptions: RequestInit = {
@@ -51,13 +51,23 @@ export class BackendClient {
       fetchOptions.body = JSON.stringify(body)
     }
 
-    try {
-      const response = await fetch(url, fetchOptions)
-      return response
-    } catch (error) {
-      throw new Error(
-        `Backend request failed: ${error instanceof Error ? error.message : "Unknown error"}`
-      )
+    const response = await fetch(url, fetchOptions)
+
+    if (response.status === 401) {
+      await this.handleUnauthorized()
+    }
+
+    return response
+  }
+
+  private async handleUnauthorized() {
+    if (typeof window === "undefined") {
+      const { redirect } = await import("next/navigation")
+
+      redirect("/login")
+    } else {
+      await fetch("/api/auth/logout", { method: "POST" })
+      window.location.href = "/login"
     }
   }
 

@@ -12,7 +12,7 @@ export interface AssetVendorStyle {
     color: string
 }
 
-export type TransactionType = 'income' | 'outcome'
+export type TransactionType = 'income' | 'expense'
 
 export interface TransactionItem {
     id: number
@@ -20,6 +20,7 @@ export interface TransactionItem {
     amount: number
     type: TransactionType
     date: string
+    categoryName?: string
 }
 
 export interface AssetVendorItem {
@@ -31,6 +32,7 @@ export interface AssetVendorItem {
 
 export interface AssetCategoryStyle {
     color: string
+    bgColor: string
 }
 
 export interface AssetCategory {

@@ -1,26 +1,30 @@
 import { backendClient } from "@/lib/backend/backend.client"
 import { DeleteResponse } from "@/types/api"
-import { Asset } from "@/types/domain"
+import { StockCardDTO } from "@/types/components"
+import { Asset, AssetCategory, AssetItem, AssetVendorItem } from "@/types/domain"
 import {
   createAssetSchema,
   updateAssetSchema,
 } from "@/validators/asset.schema"
 
 export class AssetService {
-  async getAll(): Promise<Asset[]> {
-    const response = await backendClient.get("/assets")
+  async getAll(): Promise<StockCardDTO[]> {
+    const [assets, categories, vendors] = await Promise.all([
+      backendClient.get("/assets").then(r => r.json()),
+      backendClient.get("/asset-categories").then(r => r.json()),
+      backendClient.get("/asset-vendors").then(r => r.json()),
+    ])
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch assets: ${response.status}`)
-    }
+    const categoryMap = new Map(categories.map((c: AssetCategory) => [c.name, c]))
+    const vendorMap = new Map(vendors.map((v: AssetVendorItem) => [v.name, v]))
 
-    const assets = await response.json()
+    const tmp =  assets.map((asset: AssetItem) => ({
+      asset: asset,
+      category: categoryMap.get(asset.categoryName),
+      vendor: vendorMap.get(asset.vendorName),
+    }))
 
-    const assetsDetails = await Promise.all(
-      assets.map((vendor: Asset) => this.getById(vendor.id))
-    )
-
-    return assetsDetails
+    return tmp
   }
 
   async getById(id: string | number): Promise<Asset> {

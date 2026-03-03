@@ -8,11 +8,7 @@ import { assetCategoryService } from "@/lib/services/asset-category.service";
 
 export default async function Home() {
   const user = await getCurrentUser()
-  const vendors = await assetVendorService.getAll()
-  const categories = await assetCategoryService.getAll()
   const assets = await assetService.getAll()
-  console.log("assets", assets)
-  console.log(vendors, categories)
 
   return (
     <div>
@@ -25,14 +21,10 @@ export default async function Home() {
               
               return (
                 <StockCard
-                  key={asset.id}
-                  href={`/assets/${asset.id}`}
-                  color={asset.assetCategory?.style?.color || "#000000"}
-                  image={asset.assetVendor?.style?.icon || "https://via.placeholder.com/50"}
-                  amount={asset.value}
-                  text={asset.description || asset.name}
-                  type={asset.assetCategory?.name || ""}
-                  additionalTitle={asset.name}
+                  key={asset.asset.id}
+                  asset={asset.asset}
+                  vendor={asset.vendor}
+                  category={asset.category}
                 />
               )
             })}

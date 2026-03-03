@@ -11,6 +11,20 @@ export class TransactionClient {
     }
   }
 
+  async getByAssetId(id: string | number): Promise<Transaction[]> {
+    const res = await fetch(`${this.baseUrl}/assets/${id}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      ...this.getFetchOptions(),
+    })
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}))
+      throw new Error(error.error || "Failed to fetch transactions")
+    }
+
+    return res.json()
+  }
   async index(): Promise<Transaction[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",

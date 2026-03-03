@@ -1,43 +1,39 @@
-import {StockType} from "@/types/StockTypes";
-import StockCardLabel from "@/components/StockCardLabel";
 import Card from "@/components/Card";
 import clsx from "clsx";
 import Link from "next/link";
+import { StockCardDTO } from "@/types/components";
 
-type StockCardProps = {
-    color: string
-    image: string
-    additionalTitle?: string
-    amount: number
-    text: string
-    type: string
-    href: string
-}
-export default function StockCard({color, image, additionalTitle, amount, text, type, href}: StockCardProps) {
-    return(
 
+export default function StockCard({ asset, vendor, category }: StockCardDTO) {
+    const vendorColor = vendor.style?.color || '';
+    const vendorImage = vendor.style?.image || '';
+    const assetType = vendor.name.toLowerCase();
+    const href = `/assets/${asset.id}`;
+
+    return (
         <Card className="sm:max-w-[750px] cursor-pointer">
             <Link href={href}>
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-y-4">
                     <div className={clsx("flex items-center")}>
-                        <img
-                            src={image}
-                            alt="stock image"
+                        {vendorImage && <img
+                            src={vendorImage}
+                            alt={`${vendor.name} image`}
                             className={clsx(
                                 "h-[35px] object-contain",
-                                additionalTitle ? "me-3" : "w-[165px]"
+                                asset.name ? "me-3" : "w-[165px]"
                             )}
-
-                        />
-                        {additionalTitle && <div style={{color}} className="text-4xl font-bold">{additionalTitle}</div>}
+                        />}
+                        {asset.name && <div style={{ color: vendorColor }} className="text-4xl font-bold">{asset.name}</div>}
                     </div>
-                    <div style={{ color }} className={`text-3xl  font-bold`}>{Intl.NumberFormat("hu-HU").format(amount)} Ft</div>
+                    <div style={{ color: vendorColor }} className={`text-3xl font-bold`}>
+                        {Intl.NumberFormat("hu-HU").format(asset.value)} {asset.currency}
+                    </div>
                 </div>
                 <div className="mt-4 flex justify-between items-end">
-                    <div style={{ color }} className="text-lg font-bold">{text}</div>
-                    <StockCardLabel type={type}/>
+                    <div style={{ color: vendorColor }} className="text-lg font-bold">{category.name}</div>
+                    <div style={{color: category.style?.color, backgroundColor: category.style?.bgColor || ''}} className={`py-1 px-2 bg-gray-500 rounded-2xl`}>{category.name}</div>
                 </div>
             </Link>
-        </Card>   
+        </Card>
     )
 }
