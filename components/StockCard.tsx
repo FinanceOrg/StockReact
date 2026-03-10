@@ -4,7 +4,9 @@ import Link from "next/link";
 import { StockCardDTO } from "@/types/components";
 
 
-export default function StockCard({ asset, vendor, category }: StockCardDTO) {
+export default function StockCard(asset: StockCardDTO) {
+    const vendor = asset.vendor
+    const category = asset.category
     const vendorColor = vendor.style?.color || '';
     const vendorImage = vendor.style?.image || '';
     const assetType = vendor.name.toLowerCase();

@@ -9,22 +9,10 @@ import {
 
 export class AssetService {
   async getAll(): Promise<StockCardDTO[]> {
-    const [assets, categories, vendors] = await Promise.all([
-      backendClient.get("/assets").then(r => r.json()),
-      backendClient.get("/asset-categories").then(r => r.json()),
-      backendClient.get("/asset-vendors").then(r => r.json()),
-    ])
+    const response = await backendClient.get("/assets")
+    const assets = await response.json()
 
-    const categoryMap = new Map(categories.map((c: AssetCategory) => [c.name, c]))
-    const vendorMap = new Map(vendors.map((v: AssetVendorItem) => [v.name, v]))
-
-    const tmp =  assets.map((asset: AssetItem) => ({
-      asset: asset,
-      category: categoryMap.get(asset.categoryName),
-      vendor: vendorMap.get(asset.vendorName),
-    }))
-
-    return tmp
+    return assets
   }
 
   async getById(id: string | number): Promise<Asset> {

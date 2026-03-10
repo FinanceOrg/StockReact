@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    const { token } = await backendRes.json()
+    const { token, user } = await backendRes.json()
     const response = NextResponse.json({ success: true })
 
     response.cookies.set("token", token, {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       path: "/",
     })
 
-    response.cookies.set("email", parsed.data.email, {
+    response.cookies.set("id", user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

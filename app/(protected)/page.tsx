@@ -21,10 +21,8 @@ export default async function Home() {
               
               return (
                 <StockCard
-                  key={asset.asset.id}
-                  asset={asset.asset}
-                  vendor={asset.vendor}
-                  category={asset.category}
+                  key={asset.id}
+                  {...asset}
                 />
               )
             })}

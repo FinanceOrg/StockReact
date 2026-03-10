@@ -60,7 +60,7 @@ export class BackendClient {
     return response
   }
 
-  private async handleUnauthorized() {
+  public async handleUnauthorized() {
     if (typeof window === "undefined") {
       const { redirect } = await import("next/navigation")
 
