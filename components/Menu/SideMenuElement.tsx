@@ -19,26 +19,22 @@ export default function SideMenuElement({
   onClick,
   reverseIcon = false,
 }: SideMenuElementProps) {
-
   const baseClasses = clsx(
     "group cursor-pointer flex flex-col items-center justify-center w-15",
-    !isActive && "rounded-lg text-[#A4ACB9] hover:bg-[#1E3258]"
+    !isActive && "rounded-lg text-[#A4ACB9] hover:bg-[#1E3258]",
   );
 
   const iconWrapperClasses = clsx(
     "size-10 flex items-center justify-center rounded-lg",
-    isActive ? "bg-white" : "text-gray-500"
+    isActive ? "bg-white" : "text-gray-500",
   );
 
   const iconClasses = clsx(
     "size-8 transition-transform duration-200",
-    reverseIcon && "rotate-180"
+    reverseIcon && "rotate-180",
   );
 
-  const labelClasses = clsx(
-    "hidden sm:block",
-    isActive && "text-white"
-  );
+  const labelClasses = clsx("hidden sm:block", isActive && "text-white");
 
   const content = (
     <>
@@ -46,9 +42,7 @@ export default function SideMenuElement({
         <Icon className={iconClasses} />
       </div>
 
-      <div className={labelClasses}>
-        {name}
-      </div>
+      <div className={labelClasses}>{name}</div>
     </>
   );
 

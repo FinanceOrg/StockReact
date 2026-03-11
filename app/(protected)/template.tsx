@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
-
 const variants = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
@@ -15,11 +14,7 @@ const transition = {
   ease: [0.4, 0, 0.2, 1] as const,
 };
 
-export default function Template({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (

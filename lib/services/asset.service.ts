@@ -7,7 +7,6 @@ import {
   updateAssetSchema,
 } from "@/validators/asset.schema";
 
-
 export class AssetService {
   async getAll(): Promise<Asset[]> {
     const response = await backendClient.get("/assets");
@@ -51,9 +50,7 @@ export class AssetService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -80,9 +77,7 @@ export class AssetService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -101,9 +96,7 @@ export class AssetService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

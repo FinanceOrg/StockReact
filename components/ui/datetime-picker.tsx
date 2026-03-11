@@ -56,7 +56,10 @@ export default function DateTimePicker({
     <div className="flex gap-3">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-40 justify-between font-normal">
+          <Button
+            variant="outline"
+            className="w-40 justify-between font-normal"
+          >
             {value ? format(value, "PPP") : "Select date"}
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>

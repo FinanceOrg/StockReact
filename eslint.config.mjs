@@ -26,10 +26,10 @@ const eslintConfig = [
       quotes: ["error", "double", { allowTemplateLiterals: true }],
       semi: ["error", "always"],
       "no-restricted-imports": [
-            "error",
-            {
-              patterns: ["../*", "../../*", "../../../*"]
-            }
+        "error",
+        {
+          patterns: ["../*", "../../*", "../../../*"],
+        },
       ],
       "import/order": [
         "error",
@@ -40,22 +40,22 @@ const eslintConfig = [
             "internal",
             "parent",
             "sibling",
-            "index"
+            "index",
           ],
           pathGroups: [
             {
               pattern: "@/**",
-              group: "internal"
-            }
+              group: "internal",
+            },
           ],
           pathGroupsExcludedImportTypes: ["builtin"],
           "newlines-between": "always",
           alphabetize: {
             order: "asc",
-            caseInsensitive: true
-          }
-        }
-      ]
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
   },
 ];

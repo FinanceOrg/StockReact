@@ -1,5 +1,8 @@
 import { backendClient } from "@/lib/backend/backend.client";
-import { mapAssetCategoryIndex, mapAssetCategoryShow } from "@/mappers/assetCategoryMapper";
+import {
+  mapAssetCategoryIndex,
+  mapAssetCategoryShow,
+} from "@/mappers/assetCategoryMapper";
 import { DeleteResponse } from "@/types/api";
 import { Category } from "@/types/domain";
 import {
@@ -14,7 +17,7 @@ export class AssetCategoryService {
     if (!response.ok) {
       throw new Error(`Failed to fetch categories: ${response.status}`);
     }
-    const categoryDTO = await response.json(); 
+    const categoryDTO = await response.json();
 
     return mapAssetCategoryIndex(categoryDTO);
   }
@@ -54,9 +57,7 @@ export class AssetCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -78,7 +79,7 @@ export class AssetCategoryService {
 
     const response = await backendClient.put(
       `/asset-categories/${id}`,
-      parsed.data
+      parsed.data,
     );
 
     if (!response.ok) {
@@ -86,9 +87,7 @@ export class AssetCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -107,9 +106,7 @@ export class AssetCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

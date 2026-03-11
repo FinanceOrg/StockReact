@@ -42,7 +42,7 @@ export default function AssetTransactions({
             "flex flex-wrap sm:flex-nowrap py-2 justify-between px-4 sm:px-2 bg-white cursor-pointer",
             "sm:bg-white/90 hover:bg-white/70 transition duration-300",
             i === transactions.length - 1 && "rounded-b-lg",
-            i === 0 && "rounded-t-lg sm:rounded-t-none"
+            i === 0 && "rounded-t-lg sm:rounded-t-none",
           )}
         >
           <div className="sm:text-center sm:basis-1/4 basis-1/2 font-bold sm:font-normal">
@@ -50,7 +50,10 @@ export default function AssetTransactions({
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2 text-right">
-            {row.amount} {typeof(asset.currency) === "string" ? asset.currency : asset.currency.symbol}
+            {row.amount}{" "}
+            {typeof asset.currency === "string"
+              ? asset.currency
+              : asset.currency.symbol}
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2">

@@ -1,6 +1,9 @@
 import { DeleteResponse } from "@/types/api";
 import { Category } from "@/types/domain";
-import { CreateCategoryInput, UpdateCategoryInput } from "@/validators/category.schema";
+import {
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from "@/validators/category.schema";
 
 export class AssetCategoryClient {
   private baseUrl = "/api/asset-categories";
@@ -42,7 +45,7 @@ export class AssetCategoryClient {
   }
 
   async create<T extends Category = Category>(
-    data: CreateCategoryInput
+    data: CreateCategoryInput,
   ): Promise<T> {
     const res = await fetch(this.baseUrl, {
       method: "POST",
@@ -61,7 +64,7 @@ export class AssetCategoryClient {
 
   async update<T extends Category = Category>(
     id: string,
-    data: UpdateCategoryInput
+    data: UpdateCategoryInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",

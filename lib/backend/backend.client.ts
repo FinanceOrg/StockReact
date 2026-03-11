@@ -1,9 +1,9 @@
 import { getToken } from "@/lib/api/validation";
 
 interface BackendRequestOptions {
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
-  body?: unknown
-  isJson?: boolean
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  body?: unknown;
+  isJson?: boolean;
 }
 
 export class BackendClient {
@@ -32,7 +32,7 @@ export class BackendClient {
 
   async request(
     endpoint: string,
-    options: BackendRequestOptions = {}
+    options: BackendRequestOptions = {},
   ): Promise<Response> {
     const { method = "GET", body, isJson = true } = options;
 

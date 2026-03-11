@@ -14,7 +14,7 @@ export class TransactionCategoryService {
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch transaction categories: ${response.status}`
+        `Failed to fetch transaction categories: ${response.status}`,
       );
     }
 
@@ -35,7 +35,7 @@ export class TransactionCategoryService {
         throw new Error("Transaction category not found");
       }
       throw new Error(
-        `Failed to fetch transaction category: ${response.status}`
+        `Failed to fetch transaction category: ${response.status}`,
       );
     }
 
@@ -55,7 +55,7 @@ export class TransactionCategoryService {
 
     const response = await backendClient.post(
       "/transaction-categories",
-      parsed.data
+      parsed.data,
     );
 
     if (!response.ok) {
@@ -63,9 +63,7 @@ export class TransactionCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -87,7 +85,7 @@ export class TransactionCategoryService {
 
     const response = await backendClient.put(
       `/transaction-categories/${id}`,
-      parsed.data
+      parsed.data,
     );
 
     if (!response.ok) {
@@ -95,9 +93,7 @@ export class TransactionCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -110,7 +106,7 @@ export class TransactionCategoryService {
     }
 
     const response = await backendClient.delete(
-      `/transaction-categories/${id}`
+      `/transaction-categories/${id}`,
     );
 
     if (!response.ok) {
@@ -118,9 +114,7 @@ export class TransactionCategoryService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

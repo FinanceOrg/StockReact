@@ -4,12 +4,10 @@ import { z } from "zod";
 
 import { ValidationResult, ValidationErrorResponse } from "@/types/api";
 
-
 export function validate<S extends z.ZodTypeAny>(
   schema: S,
-  data: unknown
+  data: unknown,
 ): ValidationResult<z.infer<S>> {
-
   const parsed = schema.safeParse(data);
 
   if (!parsed.success) {

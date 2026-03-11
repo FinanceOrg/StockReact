@@ -10,7 +10,12 @@ export class AuthClient {
       body: JSON.stringify(data),
     });
 
-    if (!res.ok) throw new Error(res.status === 401 ? "Invalid email or password" : "Something went wrong!");
+    if (!res.ok)
+      throw new Error(
+        res.status === 401
+          ? "Invalid email or password"
+          : "Something went wrong!",
+      );
     return await res.json();
   }
 

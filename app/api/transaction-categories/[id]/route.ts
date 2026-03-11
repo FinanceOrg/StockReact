@@ -4,7 +4,7 @@ import { transactionCategoryService } from "@/lib/services/transaction-category.
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -12,7 +12,9 @@ export async function GET(
     return NextResponse.json(category, { status: 200 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to fetch transaction category";
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch transaction category";
 
     if (message.includes("not found")) {
       return NextResponse.json({ error: message }, { status: 404 });
@@ -24,7 +26,7 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -33,7 +35,9 @@ export async function PUT(
     return NextResponse.json(category, { status: 200 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to update transaction category";
+      error instanceof Error
+        ? error.message
+        : "Failed to update transaction category";
 
     if (message.includes("Validation failed")) {
       return NextResponse.json({ error: message }, { status: 400 });
@@ -49,7 +53,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -57,7 +61,9 @@ export async function DELETE(
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to delete transaction category";
+      error instanceof Error
+        ? error.message
+        : "Failed to delete transaction category";
 
     if (message.includes("not found")) {
       return NextResponse.json({ error: message }, { status: 404 });

@@ -15,10 +15,10 @@ import EyeOff from "@/icons/eye-off.svg";
 import Eye from "@/icons/eye.svg";
 
 interface PasswordProps<T extends FieldValues> {
-  control: Control<T>
-  name: Path<T>
-  label: string
-  placeholder?: string
+  control: Control<T>;
+  name: Path<T>;
+  label: string;
+  placeholder?: string;
 }
 
 export function Password<T extends FieldValues>({
@@ -52,11 +52,7 @@ export function Password<T extends FieldValues>({
                 onClick={() => setShow(!show)}
                 className="px-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
-                {show ? (
-                  <Eye className={size} />
-                ) : (
-                  <EyeOff className={size} />
-                )}
+                {show ? <Eye className={size} /> : <EyeOff className={size} />}
               </button>
             </div>
           </FormControl>

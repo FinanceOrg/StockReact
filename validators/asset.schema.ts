@@ -12,5 +12,5 @@ export const createAssetSchema = z.object({
 
 export const updateAssetSchema = createAssetSchema.partial();
 
-export type CreateAssetInput = z.infer<typeof createAssetSchema>
-export type UpdateAssetInput = z.infer<typeof updateAssetSchema>
+export type CreateAssetInput = z.infer<typeof createAssetSchema>;
+export type UpdateAssetInput = z.infer<typeof updateAssetSchema>;

@@ -1,5 +1,3 @@
-export class UserClient {
-
-}
+export class UserClient {}
 
 export const userClient = new UserClient();

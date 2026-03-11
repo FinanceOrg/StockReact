@@ -6,29 +6,29 @@ export function mapAssetIndex(dtos: AssetIndexDTO[]): Asset[] {
 }
 
 export function mapAssetIndexItem(dto: AssetIndexDTO): Asset {
-    return {
-        id: dto.id,
-        name: dto.name,
-        value: dto.value,
-        currency: dto.currency,
-        description: dto.description,
-        
-        user: dto.user,
-        category: dto.category,
-        vendor: dto.vendor,
-    };
+  return {
+    id: dto.id,
+    name: dto.name,
+    value: dto.value,
+    currency: dto.currency,
+    description: dto.description,
+
+    user: dto.user,
+    category: dto.category,
+    vendor: dto.vendor,
+  };
 }
 
 export function mapAssetShow(dto: AssetShowDTO): Asset {
-    return {
-        id: dto.id,
-        name: dto.name,
-        value: dto.value,
-        description: dto.description,
-        
-        currency: dto.currency,
-        user: dto.user,
-        category: dto.assetCategory,
-        vendor: dto.assetVendor,
-    };
+  return {
+    id: dto.id,
+    name: dto.name,
+    value: dto.value,
+    description: dto.description,
+
+    currency: dto.currency,
+    user: dto.user,
+    category: dto.assetCategory,
+    vendor: dto.assetVendor,
+  };
 }

@@ -1,5 +1,8 @@
 import { backendClient } from "@/lib/backend/backend.client";
-import { mapAssetVendorIndex, mapAssetVendorShow } from "@/mappers/assetVendorMapper";
+import {
+  mapAssetVendorIndex,
+  mapAssetVendorShow,
+} from "@/mappers/assetVendorMapper";
 import { DeleteResponse } from "@/types/api";
 import { AssetVendor } from "@/types/domain";
 import {
@@ -55,9 +58,7 @@ export class AssetVendorService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -77,16 +78,17 @@ export class AssetVendorService {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const response = await backendClient.put(`/asset-vendors/${id}`, parsed.data);
+    const response = await backendClient.put(
+      `/asset-vendors/${id}`,
+      parsed.data,
+    );
 
     if (!response.ok) {
       let errorMessage = `Failed to update vendor: ${response.status}`;
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -105,9 +107,7 @@ export class AssetVendorService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

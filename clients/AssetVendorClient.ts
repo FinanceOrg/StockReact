@@ -1,6 +1,9 @@
 import { DeleteResponse } from "@/types/api";
 import { AssetVendor } from "@/types/domain";
-import { CreateVendorInput, UpdateVendorInput } from "@/validators/vendor.schema";
+import {
+  CreateVendorInput,
+  UpdateVendorInput,
+} from "@/validators/vendor.schema";
 
 export class AssetVendorClient {
   private baseUrl = "/api/asset-vendors";
@@ -41,7 +44,9 @@ export class AssetVendorClient {
     return res.json();
   }
 
-  async create<T extends AssetVendor = AssetVendor>(data: CreateVendorInput): Promise<T> {
+  async create<T extends AssetVendor = AssetVendor>(
+    data: CreateVendorInput,
+  ): Promise<T> {
     const res = await fetch(this.baseUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -59,7 +64,7 @@ export class AssetVendorClient {
 
   async update<T extends AssetVendor = AssetVendor>(
     id: string,
-    data: UpdateVendorInput
+    data: UpdateVendorInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",

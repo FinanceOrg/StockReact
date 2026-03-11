@@ -50,9 +50,7 @@ export class TransactionService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -71,10 +69,10 @@ export class TransactionService {
         .join("; ");
       throw new Error(`Validation failed: ${errors}`);
     }
-    
+
     const response = await backendClient.patch(
       `/transactions/${id}`,
-      parsed.data
+      parsed.data,
     );
 
     if (!response.ok) {
@@ -82,9 +80,7 @@ export class TransactionService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 
@@ -103,9 +99,7 @@ export class TransactionService {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        
-      }
+      } catch {}
       throw new Error(errorMessage);
     }
 

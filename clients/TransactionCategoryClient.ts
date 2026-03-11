@@ -1,6 +1,9 @@
 import { DeleteResponse } from "@/types/api";
 import { TransactionCategory } from "@/types/domain";
-import { CreateTransactionCategoryInput, UpdateTransactionCategoryInput } from "@/validators/transaction-category.schema";
+import {
+  CreateTransactionCategoryInput,
+  UpdateTransactionCategoryInput,
+} from "@/validators/transaction-category.schema";
 
 export class TransactionCategoryClient {
   private baseUrl = "/api/transaction-categories";
@@ -26,7 +29,9 @@ export class TransactionCategoryClient {
     return res.json();
   }
 
-  async show<T extends TransactionCategory = TransactionCategory>(id: string): Promise<T> {
+  async show<T extends TransactionCategory = TransactionCategory>(
+    id: string,
+  ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -42,7 +47,7 @@ export class TransactionCategoryClient {
   }
 
   async create<T extends TransactionCategory = TransactionCategory>(
-    data: CreateTransactionCategoryInput
+    data: CreateTransactionCategoryInput,
   ): Promise<T> {
     const res = await fetch(this.baseUrl, {
       method: "POST",
@@ -61,7 +66,7 @@ export class TransactionCategoryClient {
 
   async update<T extends TransactionCategory = TransactionCategory>(
     id: string,
-    data: UpdateTransactionCategoryInput
+    data: UpdateTransactionCategoryInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",

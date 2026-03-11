@@ -1,6 +1,9 @@
 import { DeleteResponse } from "@/types/api";
 import { Transaction } from "@/types/domain";
-import { CreateTransactionInput, UpdateTransactionInput } from "@/validators/transaction.schema";
+import {
+  CreateTransactionInput,
+  UpdateTransactionInput,
+} from "@/validators/transaction.schema";
 
 export class TransactionClient {
   private baseUrl = "/api/transactions";
@@ -56,7 +59,7 @@ export class TransactionClient {
   }
 
   async create<T extends Transaction = Transaction>(
-    data: CreateTransactionInput
+    data: CreateTransactionInput,
   ): Promise<T> {
     const res = await fetch(this.baseUrl, {
       method: "POST",
@@ -75,7 +78,7 @@ export class TransactionClient {
 
   async update<T extends Transaction = Transaction>(
     id: string,
-    data: UpdateTransactionInput
+    data: UpdateTransactionInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",

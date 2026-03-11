@@ -35,7 +35,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({
@@ -49,8 +49,8 @@ function Button({
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-    isLoading?: boolean
+    asChild?: boolean;
+    isLoading?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
 
@@ -62,7 +62,7 @@ function Button({
       disabled={disabled || isLoading}
       className={cn(
         buttonVariants({ variant, size, className }),
-        "cursor-pointer relative"
+        "cursor-pointer relative",
       )}
       {...props}
     >
@@ -88,9 +88,7 @@ function Button({
         </svg>
       )}
 
-      <span className={cn(isLoading && "opacity-0")}>
-        {children}
-      </span>
+      <span className={cn(isLoading && "opacity-0")}>{children}</span>
     </Comp>
   );
 }

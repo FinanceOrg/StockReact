@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/select";
 import { TransactionCategory, TransactionSummary } from "@/types/domain";
 
-
 const transactionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   amount: z.number().positive("Amount must be greater than 0"),
@@ -100,7 +99,11 @@ export default function TransactionModal({
     if (!open) return;
 
     if (transaction) {
-      const validType = (["income", "expense"].includes(transaction.type) ? transaction.type : "income") as "income" | "expense";
+      const validType = (
+        ["income", "expense"].includes(transaction.type)
+          ? transaction.type
+          : "income"
+      ) as "income" | "expense";
       reset({
         name: transaction.name,
         amount: transaction.amount,
@@ -131,7 +134,7 @@ export default function TransactionModal({
       if (transactionId) {
         result = await transactionClient.update(
           transactionId.toString(),
-          payload
+          payload,
         );
 
         onSuccess?.(result);
@@ -151,21 +154,16 @@ export default function TransactionModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? "Update" : "Create"} transaction
-          </DialogTitle>
+          <DialogTitle>{isEdit ? "Update" : "Create"} transaction</DialogTitle>
           <DialogDescription>
-          {isEdit
-            ? "Modify the transaction details below."
-            : "Fill in the details to create a new transaction."}
-        </DialogDescription>
+            {isEdit
+              ? "Modify the transaction details below."
+              : "Fill in the details to create a new transaction."}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            onSubmit={handleSubmit(onFormSubmit)}
-            className="space-y-5"
-          >
+          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
             {/* Name */}
             <FormField
               control={form.control}
@@ -193,9 +191,7 @@ export default function TransactionModal({
                       type="number"
                       placeholder="0.00"
                       value={field.value ?? ""}
-                      onChange={(e) =>
-                        field.onChange(Number(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -212,13 +208,9 @@ export default function TransactionModal({
                   <FormLabel>Date & Time</FormLabel>
                   <FormControl>
                     <DateTimePicker
-                      value={
-                        field.value ? new Date(field.value) : undefined
-                      }
+                      value={field.value ? new Date(field.value) : undefined}
                       onChange={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : ""
-                        )
+                        field.onChange(date ? date.toISOString() : "")
                       }
                     />
                   </FormControl>
@@ -234,22 +226,15 @@ export default function TransactionModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="income">
-                        Income
-                      </SelectItem>
-                      <SelectItem value="expense">
-                        Expense
-                      </SelectItem>
+                      <SelectItem value="income">Income</SelectItem>
+                      <SelectItem value="expense">Expense</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -276,10 +261,7 @@ export default function TransactionModal({
 
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem
-                          key={category.id}
-                          value={category.name}
-                        >
+                        <SelectItem key={category.id} value={category.name}>
                           {category.name}
                         </SelectItem>
                       ))}

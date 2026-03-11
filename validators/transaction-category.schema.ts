@@ -9,7 +9,12 @@ export const createTransactionCategorySchema = z.object({
   description: z.string().optional(),
 });
 
-export const updateTransactionCategorySchema = createTransactionCategorySchema.partial();
+export const updateTransactionCategorySchema =
+  createTransactionCategorySchema.partial();
 
-export type CreateTransactionCategoryInput = z.infer<typeof createTransactionCategorySchema>
-export type UpdateTransactionCategoryInput = z.infer<typeof updateTransactionCategorySchema>
+export type CreateTransactionCategoryInput = z.infer<
+  typeof createTransactionCategorySchema
+>;
+export type UpdateTransactionCategoryInput = z.infer<
+  typeof updateTransactionCategorySchema
+>;

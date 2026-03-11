@@ -59,7 +59,7 @@ export class AssetClient {
 
   async update<T extends Asset = Asset>(
     id: string,
-    data: UpdateAssetInput
+    data: UpdateAssetInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",
@@ -91,7 +91,7 @@ export class AssetClient {
     return res.json();
   }
 
-  async recalculate(id: string): Promise<{message: string}> {
+  async recalculate(id: string): Promise<{ message: string }> {
     const res = await fetch(`${this.baseUrl}/${id}/recalculate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

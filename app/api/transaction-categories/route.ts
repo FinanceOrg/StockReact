@@ -8,7 +8,9 @@ export async function GET() {
     return NextResponse.json(categories, { status: 200 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to fetch transaction categories";
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch transaction categories";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
@@ -20,7 +22,9 @@ export async function POST(req: Request) {
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to create transaction category";
+      error instanceof Error
+        ? error.message
+        : "Failed to create transaction category";
 
     if (message.includes("Validation failed")) {
       return NextResponse.json({ error: message }, { status: 400 });

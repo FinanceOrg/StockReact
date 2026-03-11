@@ -8,7 +8,7 @@ export const createTransactionSchema = z.object({
   type: z.enum(["expense", "income"], {
     message: "Type must be either 'expense' or 'income'",
   }),
-   date: z
+  date: z
     .string()
     .regex(mysqlDateTimeRegex, "Date must be in yyyy-MM-dd HH:mm:ss format"),
   assetId: z.number().int().positive("Asset ID must be positive"),
@@ -17,5 +17,5 @@ export const createTransactionSchema = z.object({
 
 export const updateTransactionSchema = createTransactionSchema.partial();
 
-export type CreateTransactionInput = z.infer<typeof createTransactionSchema>
-export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>
+export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
+export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;

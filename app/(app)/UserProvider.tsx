@@ -10,14 +10,10 @@ export function UserProvider({
   user,
   children,
 }: {
-  user: User | null
-  children: React.ReactNode
+  user: User | null;
+  children: React.ReactNode;
 }) {
-  return (
-    <UserContext.Provider value={user}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
 export function useUser() {
