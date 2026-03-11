@@ -1,6 +1,6 @@
 "use client";
 
-import { TransactionItem } from "@/types/domain";
+import { Transaction } from "@/types/domain";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 type SampleChartProps = {
-  transactions: TransactionItem[];
+  transactions: Transaction[];
   title?: string;
 };
 

@@ -1,13 +1,13 @@
 import { backendClient } from "@/lib/backend/backend.client"
 import { DeleteResponse } from "@/types/api"
-import { Transaction, TransactionItem } from "@/types/domain"
+import { Transaction } from "@/types/domain"
 import {
   createTransactionSchema,
   updateTransactionSchema,
 } from "@/validators/transaction.schema"
 
 export class TransactionService {
-  async getByAssetId(id: string | number): Promise<TransactionItem[]> {
+  async getByAssetId(id: string | number): Promise<Transaction[]> {
     const response = await backendClient.get(`assets/${id}/transactions`)
 
     if (!response.ok) {

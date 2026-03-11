@@ -1,5 +1,5 @@
 import { DeleteResponse } from "@/types/api"
-import { AssetCategory } from "@/types/domain"
+import { Category } from "@/types/domain"
 import { CreateCategoryInput, UpdateCategoryInput } from "@/validators/category.schema"
 
 export class AssetCategoryClient {
@@ -11,7 +11,7 @@ export class AssetCategoryClient {
     }
   }
 
-  async index(): Promise<AssetCategory[]> {
+  async index(): Promise<Category[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -26,7 +26,7 @@ export class AssetCategoryClient {
     return res.json()
   }
 
-  async show<T extends AssetCategory = AssetCategory>(id: string): Promise<T> {
+  async show<T extends Category = Category>(id: string): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -41,7 +41,7 @@ export class AssetCategoryClient {
     return res.json()
   }
 
-  async create<T extends AssetCategory = AssetCategory>(
+  async create<T extends Category = Category>(
     data: CreateCategoryInput
   ): Promise<T> {
     const res = await fetch(this.baseUrl, {
@@ -59,7 +59,7 @@ export class AssetCategoryClient {
     return res.json()
   }
 
-  async update<T extends AssetCategory = AssetCategory>(
+  async update<T extends Category = Category>(
     id: string,
     data: UpdateCategoryInput
   ): Promise<T> {

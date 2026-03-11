@@ -1,10 +1,13 @@
 import { backendClient } from "@/lib/backend/backend.client"
+import { mapAssetCategoryShow } from "@/mappers/assetCategoryMapper"
+import { mapTransactionCategoryIndex } from "@/mappers/transactionCategoryMapper"
 import { DeleteResponse } from "@/types/api"
 import { TransactionCategory } from "@/types/domain"
 import {
   createTransactionCategorySchema,
   updateTransactionCategorySchema,
 } from "@/validators/transaction-category.schema"
+import { ca } from "date-fns/locale"
 
 export class TransactionCategoryService {
   async getAll(): Promise<TransactionCategory[]> {
@@ -16,7 +19,9 @@ export class TransactionCategoryService {
       )
     }
 
-    return await response.json()
+    const categoryDTO = await response.json()
+
+    return mapTransactionCategoryIndex(categoryDTO)
   }
 
   async getById(id: string): Promise<TransactionCategory> {
@@ -35,7 +40,9 @@ export class TransactionCategoryService {
       )
     }
 
-    return await response.json()
+    const categoryDTO = await response.json()
+
+    return mapAssetCategoryShow(categoryDTO)
   }
 
   async create(data: unknown): Promise<TransactionCategory> {

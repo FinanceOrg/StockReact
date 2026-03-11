@@ -1,16 +1,18 @@
 import { backendClient } from "@/lib/backend/backend.client"
 import { DeleteResponse } from "@/types/api"
-import { StockCardDTO } from "@/types/components"
-import { Asset, AssetCategory, AssetItem, AssetVendorItem } from "@/types/domain"
+import { Asset } from "@/types/domain"
 import {
   createAssetSchema,
   updateAssetSchema,
 } from "@/validators/asset.schema"
 
+import { mapAssetIndex, mapAssetShow } from "@/mappers/assetMapper"
+
 export class AssetService {
-  async getAll(): Promise<StockCardDTO[]> {
+  async getAll(): Promise<Asset[]> {
     const response = await backendClient.get("/assets")
-    const assets = await response.json()
+    const assetsDTO = await response.json()
+    const assets = mapAssetIndex(assetsDTO)
 
     return assets
   }
@@ -28,8 +30,9 @@ export class AssetService {
       }
       throw new Error(`Failed to fetch asset: ${response.status}`)
     }
+    const assetDTO = await response.json()
 
-    return await response.json()
+    return mapAssetShow(assetDTO)
   }
 
   async create(data: unknown): Promise<Asset> {

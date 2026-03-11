@@ -1,10 +1,10 @@
 import Card from "@/components/Card";
 import clsx from "clsx";
 import Link from "next/link";
-import { StockCardDTO } from "@/types/components";
+import { Asset } from "@/types/domain";
 
 
-export default function StockCard(asset: StockCardDTO) {
+export default function StockCard(asset: Asset) {
     const vendor = asset.vendor
     const category = asset.category
     const vendorColor = vendor.style?.color || '';
@@ -28,7 +28,7 @@ export default function StockCard(asset: StockCardDTO) {
                         {asset.name && <div style={{ color: vendorColor }} className="text-4xl font-bold">{asset.name}</div>}
                     </div>
                     <div style={{ color: vendorColor }} className={`text-3xl font-bold`}>
-                        {Intl.NumberFormat("hu-HU").format(asset.value)} {asset.currency}
+                        {Intl.NumberFormat("hu-HU").format(asset.value)} {typeof(asset.currency) === 'string' ? asset.currency : asset.currency.code}
                     </div>
                 </div>
                 <div className="mt-4 flex justify-between items-end">

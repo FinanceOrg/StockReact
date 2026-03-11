@@ -1,4 +1,5 @@
 import { backendClient } from "@/lib/backend/backend.client"
+import { mapAssetVendorIndex, mapAssetVendorShow } from "@/mappers/assetVendorMapper"
 import { DeleteResponse } from "@/types/api"
 import { AssetVendor } from "@/types/domain"
 import {
@@ -14,7 +15,9 @@ export class AssetVendorService {
       throw new Error(`Failed to fetch assets: ${response.status}`)
     }
 
-    return await response.json()
+    const vendorsDTO = await response.json()
+
+    return mapAssetVendorIndex(vendorsDTO)
   }
 
   async getById(id: string): Promise<AssetVendor> {
@@ -31,7 +34,9 @@ export class AssetVendorService {
       throw new Error(`Failed to fetch vendor: ${response.status}`)
     }
 
-    return await response.json()
+    const vendorDTO = await response.json()
+
+    return mapAssetVendorShow(vendorDTO)
   }
 
   async create(data: unknown): Promise<AssetVendor> {

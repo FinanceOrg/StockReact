@@ -1,108 +1,95 @@
-export interface UserBasic {
-    id: number
-    name: string
+// types/domain/shared.ts
+
+export type ID = number;
+
+export interface Style {
+  color: string;
 }
 
-export interface TransactionCategoryStyle {
-    color: string
-}
-
-export interface AssetVendorStyle {
-    image: string
-    color: string
-}
-
-export type TransactionType = 'income' | 'expense'
-
-export interface TransactionItem {
-    id: number
-    name: string
-    amount: number
-    type: TransactionType
-    date: string
-    categoryName?: string
-}
-
-export interface AssetVendorItem {
-    id: number
-    name: string
-    style: AssetVendorStyle
-    description?: string
-}
-
-export interface AssetCategoryStyle {
-    color: string
-    bgColor: string
-}
-
-export interface AssetCategory {
-    id: number
-    name: string
-    style: AssetCategoryStyle
-    description?: string
-}
-
-export interface AssetUser {
-    id: number
-    name: string
+export interface CategoryStyle extends Style {
+  image: string;
+  bgColor: string;
 }
 
 export interface Currency {
-    code: string
-    name: string
-    symbol: string
+  code: string;
+  name: string;
+  symbol: string;
 }
 
-export interface AssetItem {
-    id: number
-    name: string
-    value: number
-    currency: string
-    categoryName: string
-    vendorName: string
+export interface Category {
+  id: ID;
+  name: string;
+  style: CategoryStyle | null;
+  description?: string;
+}
+
+export type TransactionType = 'income' | 'exponse';
+
+export interface Vendor {
+  id: ID;
+  name: string;
+  style: CategoryStyle | null;
+  description?: string;
+}
+
+export interface User {
+  id: ID;
+  name: string;
+  email: string;
+
+  totalValue?: number;
+
+  preferredCurrency?: Currency;
+
+  assets?: AssetSummary[];
+}
+
+export interface AssetSummary {
+  id: ID;
+  name: string;
+  value: number;
+  currency: string;
+
+  categoryName?: string;
+  vendorName?: string;
 }
 
 export interface Asset {
-  id: number
-  name: string
-  value: number
-  currency: Currency
-  description?: string
-  user: UserBasic
-  assetCategory: AssetCategory
-  assetVendor: AssetVendorItem
+  id: ID;
+  name: string;
+  value: number;
+
+  currency: Currency | string;
+
+  description?: string;
+
+  user: Pick<User, "id" | "name">;
+  category: Category;
+  vendor: Vendor;
 }
 
-export interface AssetVendor {
-    id: number
-    name: string
-    style: AssetVendorStyle
-    description?: string
-    assets: AssetItem[]
+export interface TransactionSummary {
+  id: ID;
+  name: string;
+  amount: number;
+
+  type: TransactionType;
+
+  date: string;
+
+  categoryName?: string;
 }
 
-export interface TransactionCategoryItem {
-    id: number
-    name: string
-    style: TransactionCategoryStyle
-    description?: string
+export interface Transaction extends TransactionSummary {
+  assetId?: ID;
+  assetName?: string;
 }
 
-export interface TransactionCategory {
-    id: number
-    name: string
-    style: TransactionCategoryStyle
-    description?: string
-    transactions: TransactionItem[]
+export interface TransactionCategory extends Category {
+  transactions?: TransactionSummary[];
 }
 
-export interface Transaction {
-    id: number
-    name: string
-    amount: number
-    type: TransactionType
-    date: string
-    assetId: number
-    assetName: string
-    categoryName: string
+export interface AssetVendor extends Vendor {
+  assets?: AssetSummary[];
 }

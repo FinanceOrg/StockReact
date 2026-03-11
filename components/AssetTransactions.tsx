@@ -1,6 +1,6 @@
 "use client";
 
-import { Asset, TransactionItem } from "@/types/domain";
+import { Asset, Transaction } from "@/types/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import TransactionModal from "./TransactionModal";
@@ -10,13 +10,13 @@ export default function AssetTransactions({
   transactions,
 }: {
   asset: Asset;
-  transactions: TransactionItem[];
+  transactions: Transaction[];
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
-    useState<TransactionItem | null>(null);
+    useState<Transaction | null>(null);
 
-  const handleRowClick = (transaction: TransactionItem) => {
+  const handleRowClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsModalOpen(true);
   };
@@ -48,7 +48,7 @@ export default function AssetTransactions({
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2 text-right">
-            {row.amount} {asset.currency.symbol}
+            {row.amount} {typeof(asset.currency) === 'string' ? asset.currency : asset.currency.symbol}
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2">

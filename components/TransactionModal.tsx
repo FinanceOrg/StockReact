@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { TransactionCategoryItem, TransactionItem } from "@/types/domain";
+import { TransactionCategory, TransactionSummary } from "@/types/domain";
 import { transactionCategoryClient } from "@/clients/TransactionCategoryClient";
 import { transactionClient } from "@/clients/TransactionClient";
 import DateTimePicker from "@/components/ui/datetime-picker";
@@ -50,9 +50,9 @@ type FormValues = z.infer<typeof transactionSchema>;
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction: TransactionItem | null;
+  transaction: TransactionSummary | null;
   transactionId: number | null;
-  onSuccess?: (transaction: TransactionItem) => void;
+  onSuccess?: (transaction: TransactionSummary) => void;
 };
 
 export default function TransactionModal({
@@ -62,7 +62,7 @@ export default function TransactionModal({
   transaction,
   onSuccess,
 }: Props) {
-  const [categories, setCategories] = useState<TransactionCategoryItem[]>([]);
+  const [categories, setCategories] = useState<TransactionCategory[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(transactionSchema),
@@ -100,11 +100,12 @@ export default function TransactionModal({
     if (!open) return;
 
     if (transaction) {
+      const validType = (["income", "expense"].includes(transaction.type) ? transaction.type : "income") as "income" | "expense";
       reset({
         name: transaction.name,
         amount: transaction.amount,
-        date: transaction.date, // ISO string
-        type: transaction.type,
+        date: transaction.date,
+        type: validType,
         categoryName: transaction.categoryName ?? "",
       });
     } else {
@@ -125,7 +126,7 @@ export default function TransactionModal({
         date: format(new Date(data.date), "yyyy-MM-dd HH:mm:ss"),
       };
 
-      let result: TransactionItem;
+      let result: TransactionSummary;
 
       if (transactionId) {
         result = await transactionClient.update(
