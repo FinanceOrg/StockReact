@@ -1,6 +1,5 @@
 import Arrow from "@/icons/arrow.svg"
 import clsx from "clsx";
-import { div } from "framer-motion/client";
 import Link from "next/link";
 
 type LogoProps = {

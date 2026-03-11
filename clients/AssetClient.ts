@@ -91,7 +91,7 @@ export class AssetClient {
     return res.json()
   }
 
-  async recalculate(id: string): Promise<any> {
+  async recalculate(id: string): Promise<{message: string}> {
     const res = await fetch(`${this.baseUrl}/${id}/recalculate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

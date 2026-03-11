@@ -2,6 +2,7 @@ import Card from "@/components/Card";
 import clsx from "clsx";
 import Link from "next/link";
 import { Asset } from "@/types/domain";
+import Image from "next/image";
 
 
 export default function StockCard(asset: Asset) {
@@ -9,7 +10,6 @@ export default function StockCard(asset: Asset) {
     const category = asset.category
     const vendorColor = vendor.style?.color || '';
     const vendorImage = vendor.style?.image || '';
-    const assetType = vendor.name.toLowerCase();
     const href = `/assets/${asset.id}`;
 
     return (
@@ -17,7 +17,7 @@ export default function StockCard(asset: Asset) {
             <Link href={href}>
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-y-4">
                     <div className={clsx("flex items-center")}>
-                        {vendorImage && <img
+                        {vendorImage && <Image
                             src={vendorImage}
                             alt={`${vendor.name} image`}
                             className={clsx(

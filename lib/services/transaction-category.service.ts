@@ -7,7 +7,6 @@ import {
   createTransactionCategorySchema,
   updateTransactionCategorySchema,
 } from "@/validators/transaction-category.schema"
-import { ca } from "date-fns/locale"
 
 export class TransactionCategoryService {
   async getAll(): Promise<TransactionCategory[]> {

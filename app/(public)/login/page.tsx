@@ -36,14 +36,14 @@ export default function LoginPage() {
     const password = form.watch("password")
     const router = useRouter()
     const tmpLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    const [authError, setAuthError] = useState<string | null>(null)
 
     useEffect(() => {
         if (authError) {
             setAuthError(null)
         }
-    }, [email, password])
+    }, [email, password, authError])
 
-    const [authError, setAuthError] = useState<string | null>(null)
     const [fetching, setFetching] = useState<boolean>(false)
 
     async function onSubmit(data: LoginForm) {
@@ -54,8 +54,9 @@ export default function LoginPage() {
         await authClient.login(data)
 
         router.push("/")
-      } catch (error: any) {
-        setAuthError(error.message || "Invalid email or password")
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Invalid email or password"
+        setAuthError(message)
         setFetching(false)
       }
     }

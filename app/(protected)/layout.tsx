@@ -1,21 +1,9 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import SideMenu from "@/components/Menu/SideMenu";
 import Menu from "@/components/Menu/Menu";
 import React from "react";
 import { getCurrentUser } from "@/lib/server/userService";
 import { UserProvider } from "../(app)/UserProvider";
-
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 type UserLayoutProps = {
     menuTitle?: string;
@@ -25,13 +13,12 @@ type UserLayoutProps = {
 
 export default async function UserLayout({
   menuTitle = "",
-  pageTitle = "",
   children,
 }: UserLayoutProps) {
     let user = null
     try {
       user = await getCurrentUser()
-    } catch (e) {
+    } catch {
 
     }
 

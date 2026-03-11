@@ -1,4 +1,3 @@
-import { AssetSummary } from './../types/domain';
 import { AssetIndexDTO, AssetShowDTO } from "@/types/backend";
 import { Asset } from "@/types/domain";
 

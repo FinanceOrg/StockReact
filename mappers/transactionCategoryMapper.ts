@@ -1,5 +1,5 @@
 import { TransactionCategory } from '@/types/domain';
-import { TransactionCategoryDTO, TransactionCategoryShowDTO, TransactionIndexDTO, TransactionShowDTO } from "@/types/backend";
+import { TransactionCategoryDTO, TransactionCategoryShowDTO, } from "@/types/backend";
 
 export function mapTransactionCategoryIndex(dtos: TransactionCategoryDTO[]): TransactionCategory[] {
   return dtos.map(mapTransactionCategoryIndexItem);

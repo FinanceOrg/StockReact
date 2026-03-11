@@ -1,7 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SideMenu from "@/components/Menu/SideMenu";
-import Menu from "@/components/Menu/Menu";
 import React from "react";
 
 

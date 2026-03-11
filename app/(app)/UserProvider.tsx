@@ -1,14 +1,15 @@
 "use client"
 
 import { createContext, useContext } from "react"
+import { User } from "@/types/domain"
 
-const UserContext = createContext<any>(null)
+const UserContext = createContext<User | null>(null)
 
 export function UserProvider({
   user,
   children,
 }: {
-  user: any
+  user: User | null
   children: React.ReactNode
 }) {
   return (

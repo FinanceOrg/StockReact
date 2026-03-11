@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
         return NextResponse.json({success: true, message: "Asset recalculated successfully" }, { status: 200 })
 
-    } catch (error) {
+    } catch {
         return getDefaultServerError()
     }
 

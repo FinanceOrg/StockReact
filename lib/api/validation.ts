@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { NextResponse } from "next/server"
-import { ValidationResult, ValidationErrorResponse, TokenResult } from "@/types/api"
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies"
+import { ValidationResult, ValidationErrorResponse } from "@/types/api"
 import { cookies } from "next/headers"
 
 export function validate<S extends z.ZodTypeAny>(
