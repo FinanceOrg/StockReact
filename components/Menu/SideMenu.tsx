@@ -1,33 +1,34 @@
 "use client"; // 👈 add this at the very top!
 
-import React from "react";
-import HomeLogo from "@/icons/home.svg";
-import DiagramLogo from "@/icons/diagram.svg";
-import SettingsLogo from "@/icons/settings.svg";
-import MoneyLogo from "@/icons/money.svg";
-import SideMenuElement from "@/components/Menu/SideMenuElement";
 import {usePathname, useRouter} from "next/navigation";
-import LogOut from "@/icons/log-out.svg"
+import React from "react";
+
 import { authClient } from "@/clients/AuthClient";
+import SideMenuElement from "@/components/Menu/SideMenuElement";
+import DiagramLogo from "@/icons/diagram.svg";
+import HomeLogo from "@/icons/home.svg";
+import LogOut from "@/icons/log-out.svg";
+import MoneyLogo from "@/icons/money.svg";
+import SettingsLogo from "@/icons/settings.svg";
 
 export default function SideMenu() {
-    const router = useRouter()
+    const router = useRouter();
 
     const handleLogout = async () => {
-        await authClient.logout()
-        router.replace("/login")
-    }
+        await authClient.logout();
+        router.replace("/login");
+    };
 
     const menuItems = [
         { name: "Home", href: "/", icon: HomeLogo },
         { name: "Statistics", href: "/stats", icon: DiagramLogo },
         { name: "Settings", href: "/settings", icon: SettingsLogo },
         { name: "Forecast", href: "/forecast", icon: MoneyLogo },
-    ]
+    ];
 
-    const logoutItem = { name: "Logout", icon: LogOut, action: handleLogout, reverseIcon: true }
+    const logoutItem = { name: "Logout", icon: LogOut, action: handleLogout, reverseIcon: true };
 
-    const pathname = usePathname()
+    const pathname = usePathname();
 
     return (
         <div className="fixed sm:static bottom-0 w-full bg-[#17253E] h-[50px] sm:h-full sm:w-[80px] flex
@@ -36,7 +37,7 @@ export default function SideMenu() {
             <div className="flex sm:flex-col">
                 {
                     menuItems.map((item) => {
-                        const isActive = pathname === item.href
+                        const isActive = pathname === item.href;
 
                         return (
                             <SideMenuElement
@@ -46,7 +47,7 @@ export default function SideMenu() {
                                 href={item.href}
                                 isActive={isActive}
                             />
-                        )
+                        );
                     })
                 }
             </div>

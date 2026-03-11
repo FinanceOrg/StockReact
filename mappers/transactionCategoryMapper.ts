@@ -1,12 +1,12 @@
-import { TransactionCategory } from '@/types/domain';
 import { TransactionCategoryDTO, TransactionCategoryShowDTO, } from "@/types/backend";
+import { TransactionCategory } from "@/types/domain";
 
 export function mapTransactionCategoryIndex(dtos: TransactionCategoryDTO[]): TransactionCategory[] {
   return dtos.map(mapTransactionCategoryIndexItem);
 }
 
 export function mapTransactionCategoryIndexItem(dto: TransactionCategoryDTO): TransactionCategory {
-    return mapTransactionCategoryShow(dto)
+    return mapTransactionCategoryShow(dto);
 }
 
 export function mapTransactionCategoryShow(dto: TransactionCategoryShowDTO | TransactionCategoryDTO): TransactionCategory {
@@ -15,5 +15,5 @@ export function mapTransactionCategoryShow(dto: TransactionCategoryShowDTO | Tra
         name: dto.name,
         style: dto.style,
         description: dto.description,
-    }
+    };
 }

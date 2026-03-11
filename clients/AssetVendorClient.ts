@@ -1,14 +1,14 @@
-import { DeleteResponse } from "@/types/api"
-import { AssetVendor } from "@/types/domain"
-import { CreateVendorInput, UpdateVendorInput } from "@/validators/vendor.schema"
+import { DeleteResponse } from "@/types/api";
+import { AssetVendor } from "@/types/domain";
+import { CreateVendorInput, UpdateVendorInput } from "@/validators/vendor.schema";
 
 export class AssetVendorClient {
-  private baseUrl = "/api/asset-vendors"
+  private baseUrl = "/api/asset-vendors";
 
   private getFetchOptions(): RequestInit {
     return {
       credentials: "include", // Include cookies for authentication
-    }
+    };
   }
 
   async index(): Promise<AssetVendor[]> {
@@ -16,14 +16,14 @@ export class AssetVendorClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to fetch vendors")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to fetch vendors");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async show<T extends AssetVendor = AssetVendor>(id: string): Promise<T> {
@@ -31,14 +31,14 @@ export class AssetVendorClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Vendor not found")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Vendor not found");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async create<T extends AssetVendor = AssetVendor>(data: CreateVendorInput): Promise<T> {
@@ -47,14 +47,14 @@ export class AssetVendorClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to create vendor")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to create vendor");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async update<T extends AssetVendor = AssetVendor>(
@@ -66,14 +66,14 @@ export class AssetVendorClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to update vendor")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to update vendor");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
@@ -81,15 +81,15 @@ export class AssetVendorClient {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to delete vendor")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to delete vendor");
     }
 
-    return res.json()
+    return res.json();
   }
 }
 
-export const assetVendorClient = new AssetVendorClient()
+export const assetVendorClient = new AssetVendorClient();

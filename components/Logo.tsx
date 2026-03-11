@@ -1,6 +1,7 @@
-import Arrow from "@/icons/arrow.svg"
 import clsx from "clsx";
 import Link from "next/link";
+
+import Arrow from "@/icons/arrow.svg";
 
 type LogoProps = {
     size?: string;
@@ -10,7 +11,7 @@ type LogoProps = {
 }
 
 export default function Logo ({size = "size-13", bgColor = "bg-blue-600", color = "text-white", href = ""}: LogoProps) {
-    const baseClass = "rounded-tr-4xl p-2 w-fit"
+    const baseClass = "rounded-tr-4xl p-2 w-fit";
     return (
         <>
             {href ? (
@@ -23,5 +24,5 @@ export default function Logo ({size = "size-13", bgColor = "bg-blue-600", color 
                 </div>
             )}
         </>
-    )
+    );
 }

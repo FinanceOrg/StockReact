@@ -1,53 +1,55 @@
-import { z } from "zod"
-import { NextResponse } from "next/server"
-import { ValidationResult, ValidationErrorResponse } from "@/types/api"
-import { cookies } from "next/headers"
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import { ValidationResult, ValidationErrorResponse } from "@/types/api";
+
 
 export function validate<S extends z.ZodTypeAny>(
   schema: S,
   data: unknown
 ): ValidationResult<z.infer<S>> {
 
-  const parsed = schema.safeParse(data)
+  const parsed = schema.safeParse(data);
 
   if (!parsed.success) {
-    const fieldErrors: Record<string, string[]> = {}
+    const fieldErrors: Record<string, string[]> = {};
 
     for (const issue of parsed.error.issues) {
-      const field = issue.path.join(".")
-      if (!field) continue
+      const field = issue.path.join(".");
+      if (!field) continue;
 
       if (!fieldErrors[field]) {
-        fieldErrors[field] = []
+        fieldErrors[field] = [];
       }
 
-      fieldErrors[field].push(issue.message)
+      fieldErrors[field].push(issue.message);
     }
 
     const errorBody: ValidationErrorResponse = {
       message: "Validation failed",
       fieldErrors,
-    }
+    };
 
     return {
       success: false,
       response: NextResponse.json(errorBody, { status: 400 }),
-    }
+    };
   }
 
   return {
     success: true,
     data: parsed.data,
-  }
+  };
 }
 
 export async function getToken(): Promise<string> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get("token")?.value
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
   if (!token) {
-    throw Error("Token missing!")
+    throw Error("Token missing!");
   }
 
-  return token
+  return token;
 }

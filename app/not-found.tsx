@@ -1,15 +1,16 @@
 // app/not-found.tsx
-import Link from "next/link";
-import PublicLayout from './(public)/layout'
-import ProtectedLayout from './(protected)/layout'
 import { cookies } from "next/headers";
+import Link from "next/link";
+
+import ProtectedLayout from "./(protected)/layout";
+import PublicLayout from "./(public)/layout";
 
 
 export default async function NotFound() {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('token')?.value
-    const isAuthenticated = !!token
-    const Layout = isAuthenticated ? ProtectedLayout : PublicLayout
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    const isAuthenticated = !!token;
+    const Layout = isAuthenticated ? ProtectedLayout : PublicLayout;
 
     return (
         <Layout>

@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
+import { Control, FieldValues, Path } from "react-hook-form";
+
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Control, FieldValues, Path } from "react-hook-form"
-import Eye from "@/icons/eye.svg"
-import EyeOff from "@/icons/eye-off.svg"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import EyeOff from "@/icons/eye-off.svg";
+import Eye from "@/icons/eye.svg";
 
 interface PasswordProps<T extends FieldValues> {
   control: Control<T>
@@ -26,8 +27,8 @@ export function Password<T extends FieldValues>({
   label,
   placeholder,
 }: PasswordProps<T>) {
-  const [show, setShow] = useState(false)
-  const size: string = "size-6"
+  const [show, setShow] = useState(false);
+  const size: string = "size-6";
 
   return (
     <FormField
@@ -64,5 +65,5 @@ export function Password<T extends FieldValues>({
         </FormItem>
       )}
     />
-  )
+  );
 }

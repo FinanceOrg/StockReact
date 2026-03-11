@@ -1,9 +1,10 @@
 import "@/app/globals.css";
-import SideMenu from "@/components/Menu/SideMenu";
-import Menu from "@/components/Menu/Menu";
 import React from "react";
+
+import { UserProvider } from "@/app/(app)/UserProvider";
+import Menu from "@/components/Menu/Menu";
+import SideMenu from "@/components/Menu/SideMenu";
 import { getCurrentUser } from "@/lib/server/userService";
-import { UserProvider } from "../(app)/UserProvider";
 
 type UserLayoutProps = {
     menuTitle?: string;
@@ -15,9 +16,9 @@ export default async function UserLayout({
   menuTitle = "",
   children,
 }: UserLayoutProps) {
-    let user = null
+    let user = null;
     try {
-      user = await getCurrentUser()
+      user = await getCurrentUser();
     } catch {
 
     }

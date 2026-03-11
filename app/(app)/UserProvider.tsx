@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { createContext, useContext } from "react"
-import { User } from "@/types/domain"
+import { createContext, useContext } from "react";
 
-const UserContext = createContext<User | null>(null)
+import { User } from "@/types/domain";
+
+const UserContext = createContext<User | null>(null);
 
 export function UserProvider({
   user,
@@ -16,9 +17,9 @@ export function UserProvider({
     <UserContext.Provider value={user}>
       {children}
     </UserContext.Provider>
-  )
+  );
 }
 
 export function useUser() {
-  return useContext(UserContext)
+  return useContext(UserContext);
 }

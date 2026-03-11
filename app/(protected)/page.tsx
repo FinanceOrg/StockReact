@@ -1,11 +1,11 @@
-import StockCard from "@/components/StockCard";
 import Card from "@/components/Card";
-import { assetService } from "@/lib/services/asset.service";
+import StockCard from "@/components/StockCard";
 import { getCurrentUser } from "@/lib/server/userService";
+import { assetService } from "@/lib/services/asset.service";
 
 export default async function Home() {
-  const user = await getCurrentUser()
-  const assets = await assetService.getAll()
+  const user = await getCurrentUser();
+  const assets = await assetService.getAll();
 
   return (
     <div>
@@ -21,7 +21,7 @@ export default async function Home() {
                   key={asset.id}
                   {...asset}
                 />
-              )
+              );
             })}
         </div>
     </div>

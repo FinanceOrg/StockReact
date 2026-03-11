@@ -1,14 +1,14 @@
-import { DeleteResponse } from "@/types/api"
-import { Transaction } from "@/types/domain"
-import { CreateTransactionInput, UpdateTransactionInput } from "@/validators/transaction.schema"
+import { DeleteResponse } from "@/types/api";
+import { Transaction } from "@/types/domain";
+import { CreateTransactionInput, UpdateTransactionInput } from "@/validators/transaction.schema";
 
 export class TransactionClient {
-  private baseUrl = "/api/transactions"
+  private baseUrl = "/api/transactions";
 
   private getFetchOptions(): RequestInit {
     return {
       credentials: "include", // Include cookies for authentication
-    }
+    };
   }
 
   async getByAssetId(id: string | number): Promise<Transaction[]> {
@@ -16,28 +16,28 @@ export class TransactionClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to fetch transactions")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to fetch transactions");
     }
 
-    return res.json()
+    return res.json();
   }
   async index(): Promise<Transaction[]> {
     const res = await fetch(this.baseUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to fetch transactions")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to fetch transactions");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async show<T extends Transaction = Transaction>(id: string): Promise<T> {
@@ -45,14 +45,14 @@ export class TransactionClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Transaction not found")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Transaction not found");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async create<T extends Transaction = Transaction>(
@@ -63,14 +63,14 @@ export class TransactionClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to create transaction")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to create transaction");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async update<T extends Transaction = Transaction>(
@@ -82,14 +82,14 @@ export class TransactionClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to update transaction")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to update transaction");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
@@ -97,15 +97,15 @@ export class TransactionClient {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to delete transaction")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to delete transaction");
     }
 
-    return res.json()
+    return res.json();
   }
 }
 
-export const transactionClient = new TransactionClient()
+export const transactionClient = new TransactionClient();

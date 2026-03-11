@@ -24,7 +24,7 @@ export interface Category {
   description?: string;
 }
 
-export type TransactionType = 'income' | 'exponse';
+export type TransactionType = "income" | "exponse";
 
 export interface Vendor {
   id: ID;
@@ -38,7 +38,7 @@ export interface User {
   name: string;
   email: string;
 
-  totalValue: number;
+  totalValue?: number;
 
   preferredCurrency?: Currency;
 

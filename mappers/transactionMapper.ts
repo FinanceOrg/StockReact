@@ -1,5 +1,5 @@
-import { TransactionSummary } from './../types/domain';
 import { TransactionIndexDTO, TransactionShowDTO } from "@/types/backend";
+import { TransactionSummary } from "@/types/domain";
 import { Transaction } from "@/types/domain";
 
 export function mapTransactionIndex(dtos: TransactionIndexDTO[]): Transaction[] {
@@ -14,7 +14,7 @@ export function mapTransactionIndexItem(dto: TransactionIndexDTO): TransactionSu
         type: dto.type,
         date: dto.date,
         categoryName: dto.categoryName
-    }
+    };
 }
 
 export function mapTransactionShow(dto: TransactionShowDTO): Transaction {
@@ -27,5 +27,5 @@ export function mapTransactionShow(dto: TransactionShowDTO): Transaction {
         assetId: dto.assetId,
         assetName: dto.assetName,
         categoryName: dto.categoryName
-    }
+    };
 }

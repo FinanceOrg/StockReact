@@ -16,7 +16,7 @@ export function mapAssetIndexItem(dto: AssetIndexDTO): Asset {
         user: dto.user,
         category: dto.category,
         vendor: dto.vendor,
-    }
+    };
 }
 
 export function mapAssetShow(dto: AssetShowDTO): Asset {
@@ -30,5 +30,5 @@ export function mapAssetShow(dto: AssetShowDTO): Asset {
         user: dto.user,
         category: dto.assetCategory,
         vendor: dto.assetVendor,
-    }
+    };
 }

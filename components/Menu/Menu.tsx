@@ -1,5 +1,6 @@
-import NotificationLogo from '@/icons/notification.svg'
-import Logo from '../Logo';
+import Logo from "@/components/Logo";
+import NotificationLogo from "@/icons/notification.svg";
+
 
 type MenuProps = {
     title: string
@@ -15,5 +16,5 @@ export default function Menu({ title }: MenuProps) {
                 <NotificationLogo className="size-8 text-gray-500"/>
             </div>
         </div>
-    )
+    );
 }

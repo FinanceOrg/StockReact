@@ -1,4 +1,4 @@
-import { TransactionType } from './domain';
+import { TransactionType } from "./domain";
 export interface StyleDTO {
   color: string;
 }

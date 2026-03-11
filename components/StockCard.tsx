@@ -1,15 +1,17 @@
-import Card from "@/components/Card";
 import clsx from "clsx";
-import Link from "next/link";
-import { Asset } from "@/types/domain";
 import Image from "next/image";
+import Link from "next/link";
+
+import Card from "@/components/Card";
+import { Asset } from "@/types/domain";
+
 
 
 export default function StockCard(asset: Asset) {
-    const vendor = asset.vendor
-    const category = asset.category
-    const vendorColor = vendor.style?.color || '';
-    const vendorImage = vendor.style?.image || '';
+    const vendor = asset.vendor;
+    const category = asset.category;
+    const vendorColor = vendor.style?.color || "";
+    const vendorImage = vendor.style?.image || "";
     const href = `/assets/${asset.id}`;
 
     return (
@@ -28,14 +30,14 @@ export default function StockCard(asset: Asset) {
                         {asset.name && <div style={{ color: vendorColor }} className="text-4xl font-bold">{asset.name}</div>}
                     </div>
                     <div style={{ color: vendorColor }} className={`text-3xl font-bold`}>
-                        {Intl.NumberFormat("hu-HU").format(asset.value)} {typeof(asset.currency) === 'string' ? asset.currency : asset.currency.code}
+                        {Intl.NumberFormat("hu-HU").format(asset.value)} {typeof(asset.currency) === "string" ? asset.currency : asset.currency.code}
                     </div>
                 </div>
                 <div className="mt-4 flex justify-between items-end">
                     <div style={{ color: vendorColor }} className="text-lg font-bold">{category.name}</div>
-                    <div style={{color: category.style?.color, backgroundColor: category.style?.bgColor || ''}} className={`py-1 px-2 bg-gray-500 rounded-2xl`}>{category.name}</div>
+                    <div style={{color: category.style?.color, backgroundColor: category.style?.bgColor || ""}} className={`py-1 px-2 bg-gray-500 rounded-2xl`}>{category.name}</div>
                 </div>
             </Link>
         </Card>
-    )
+    );
 }

@@ -1,14 +1,14 @@
-import { DeleteResponse } from "@/types/api"
-import { Category } from "@/types/domain"
-import { CreateCategoryInput, UpdateCategoryInput } from "@/validators/category.schema"
+import { DeleteResponse } from "@/types/api";
+import { Category } from "@/types/domain";
+import { CreateCategoryInput, UpdateCategoryInput } from "@/validators/category.schema";
 
 export class AssetCategoryClient {
-  private baseUrl = "/api/asset-categories"
+  private baseUrl = "/api/asset-categories";
 
   private getFetchOptions(): RequestInit {
     return {
       credentials: "include", // Include cookies for authentication
-    }
+    };
   }
 
   async index(): Promise<Category[]> {
@@ -16,14 +16,14 @@ export class AssetCategoryClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to fetch categories")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to fetch categories");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async show<T extends Category = Category>(id: string): Promise<T> {
@@ -31,14 +31,14 @@ export class AssetCategoryClient {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Category not found")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Category not found");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async create<T extends Category = Category>(
@@ -49,14 +49,14 @@ export class AssetCategoryClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to create category")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to create category");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async update<T extends Category = Category>(
@@ -68,14 +68,14 @@ export class AssetCategoryClient {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to update category")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to update category");
     }
 
-    return res.json()
+    return res.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
@@ -83,15 +83,15 @@ export class AssetCategoryClient {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       ...this.getFetchOptions(),
-    })
+    });
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}))
-      throw new Error(error.error || "Failed to delete category")
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || "Failed to delete category");
     }
 
-    return res.json()
+    return res.json();
   }
 }
 
-export const assetCategoryClient = new AssetCategoryClient()
+export const assetCategoryClient = new AssetCategoryClient();

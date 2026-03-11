@@ -1,5 +1,6 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+
 import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,6 +20,43 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+  },
+  {
+    rules: {
+      quotes: ["error", "double", { allowTemplateLiterals: true }],
+      semi: ["error", "always"],
+      "no-restricted-imports": [
+            "error",
+            {
+              patterns: ["../*", "../../*", "../../../*"]
+            }
+      ],
+      "import/order": [
+        "error",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index"
+          ],
+          pathGroups: [
+            {
+              pattern: "@/**",
+              group: "internal"
+            }
+          ],
+          pathGroupsExcludedImportTypes: ["builtin"],
+          "newlines-between": "always",
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true
+          }
+        }
+      ]
+    },
   },
 ];
 

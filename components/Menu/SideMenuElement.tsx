@@ -1,6 +1,6 @@
-import React, { ComponentType, SVGProps } from "react";
-import Link from "next/link";
 import clsx from "clsx";
+import Link from "next/link";
+import React, { ComponentType, SVGProps } from "react";
 
 type SideMenuElementProps = {
   name: string;

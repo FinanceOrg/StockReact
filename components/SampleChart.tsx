@@ -1,6 +1,5 @@
 "use client";
 
-import { Transaction } from "@/types/domain";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +14,8 @@ import {
   Plugin,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+
+import { Transaction } from "@/types/domain";
 
 ChartJS.register(
   CategoryScale,

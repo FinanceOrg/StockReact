@@ -1,5 +1,5 @@
-import {ReactNode} from "react";
 import clsx from "clsx";
+import {ReactNode} from "react";
 
 type CardProps = {
     className?: string;
@@ -13,5 +13,5 @@ export default function Card({ className, children }: CardProps) {
         )}>
             {children}
         </div>
-    )
+    );
 }

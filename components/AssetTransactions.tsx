@@ -1,8 +1,10 @@
 "use client";
 
-import { Asset, Transaction } from "@/types/domain";
 import clsx from "clsx";
 import { useState } from "react";
+
+import { Asset, Transaction } from "@/types/domain";
+
 import TransactionModal from "./TransactionModal";
 
 export default function AssetTransactions({
@@ -48,7 +50,7 @@ export default function AssetTransactions({
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2 text-right">
-            {row.amount} {typeof(asset.currency) === 'string' ? asset.currency : asset.currency.symbol}
+            {row.amount} {typeof(asset.currency) === "string" ? asset.currency : asset.currency.symbol}
           </div>
 
           <div className="sm:text-center sm:basis-1/4 basis-1/2">

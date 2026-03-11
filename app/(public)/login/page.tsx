@@ -1,8 +1,15 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { authClient } from "@/clients/AuthClient";
+import Logo from "@/components/Logo";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormField,
@@ -10,16 +17,10 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Password } from "@/components/ui/password"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Logo from "@/components/Logo"
-import { authClient } from "@/clients/AuthClient"
-import { loginSchema } from "@/validators/auth.schema"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Password } from "@/components/ui/password";
+import { loginSchema } from "@/validators/auth.schema";
 
 type LoginForm = z.infer<typeof loginSchema>
 
@@ -30,34 +31,34 @@ export default function LoginPage() {
             email: "",
             password: "",
         },
-    })
+    });
 
-    const email = form.watch("email")
-    const password = form.watch("password")
-    const router = useRouter()
-    const tmpLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    const [authError, setAuthError] = useState<string | null>(null)
+    const email = form.watch("email");
+    const password = form.watch("password");
+    const router = useRouter();
+    const tmpLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    const [authError, setAuthError] = useState<string | null>(null);
 
     useEffect(() => {
         if (authError) {
-            setAuthError(null)
+            setAuthError(null);
         }
-    }, [email, password, authError])
+    }, [email, password, authError]);
 
-    const [fetching, setFetching] = useState<boolean>(false)
+    const [fetching, setFetching] = useState<boolean>(false);
 
     async function onSubmit(data: LoginForm) {
       try {
-        setFetching(true)
-        setAuthError(null)
+        setFetching(true);
+        setAuthError(null);
 
-        await authClient.login(data)
+        await authClient.login(data);
 
-        router.push("/")
+        router.push("/");
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Invalid email or password"
-        setAuthError(message)
-        setFetching(false)
+        const message = error instanceof Error ? error.message : "Invalid email or password";
+        setAuthError(message);
+        setFetching(false);
       }
     }
 
@@ -120,5 +121,5 @@ export default function LoginPage() {
         </div>
         
       </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const createTransactionCategorySchema = z.object({
   name: z.string().min(1, "Transaction category name is required"),
@@ -7,9 +7,9 @@ export const createTransactionCategorySchema = z.object({
     icon: z.string().min(1, "Icon is required"),
   }),
   description: z.string().optional(),
-})
+});
 
-export const updateTransactionCategorySchema = createTransactionCategorySchema.partial()
+export const updateTransactionCategorySchema = createTransactionCategorySchema.partial();
 
 export type CreateTransactionCategoryInput = z.infer<typeof createTransactionCategorySchema>
 export type UpdateTransactionCategoryInput = z.infer<typeof updateTransactionCategorySchema>
