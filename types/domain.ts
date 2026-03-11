@@ -37,8 +37,7 @@ export interface User {
   id: ID;
   name: string;
   email: string;
-
-  totalValue?: number;
+  totalValue: number;
 
   preferredCurrency?: Currency;
 
