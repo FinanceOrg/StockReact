@@ -12,7 +12,9 @@ import {
 
 export class AssetCategoryService {
   async getAll(): Promise<Category[]> {
-    const response = await backendClient.get("/asset-categories");
+    const response = await backendClient.get("/asset-categories", {
+      tags: ["tranasctions"],
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch categories: ${response.status}`);

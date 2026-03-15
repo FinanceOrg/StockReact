@@ -1,4 +1,6 @@
 import { backendClient } from "@/lib/backend/backend.client";
+import { transactionCategoryService } from "@/lib/services/transaction-category.service";
+import { mapTransactionIndex } from "@/mappers/transactionMapper";
 import { DeleteResponse } from "@/types/api";
 import { Transaction } from "@/types/domain";
 import {
@@ -8,13 +10,30 @@ import {
 
 export class TransactionService {
   async getByAssetId(id: string | number): Promise<Transaction[]> {
-    const response = await backendClient.get(`assets/${id}/transactions`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch transactions: ${response.status}`);
+    if (!id) {
+      throw new Error("Transaction ID is required");
     }
 
-    return await response.json();
+    const [transactionResponse, categories] = await Promise.all([
+      backendClient.get(`/assets/${id}/transactions`),
+      transactionCategoryService.getAll(),
+    ]);
+
+    if (!transactionResponse.ok) {
+      if (transactionResponse.status === 404) {
+        throw new Error("Transaction not found");
+      }
+
+      throw new Error(
+        `Failed to fetch transaction: ${transactionResponse.status}`,
+      );
+    }
+
+    const transactionsDTO = await transactionResponse.json();
+
+    const transactions = mapTransactionIndex(transactionsDTO, categories);
+
+    return transactions;
   }
 
   async getById(id: string): Promise<Transaction> {
@@ -61,7 +80,7 @@ export class TransactionService {
     if (!id) {
       throw new Error("Transaction ID is required");
     }
-    console.log("data", data);
+
     const parsed = updateTransactionSchema.safeParse(data);
     if (!parsed.success) {
       const errors = parsed.error.issues
@@ -84,7 +103,9 @@ export class TransactionService {
       throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const result = await response.json();
+
+    return result;
   }
 
   async delete(id: string): Promise<DeleteResponse> {

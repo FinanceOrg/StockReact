@@ -4,15 +4,25 @@ interface BackendRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: unknown;
   isJson?: boolean;
+
+  tags?: string[];
+  revalidate?: number;
 }
 
 export class BackendClient {
   private baseUrl: string;
+  private cacheRevalidate: number;
 
   constructor() {
     this.baseUrl = process.env.API_BASE_URL || "";
     if (!this.baseUrl) {
       throw new Error("API_BASE_URL environment variable is not set");
+    }
+
+    this.cacheRevalidate = Number(process.env.NEXT_CACHE_TIMEOUT) || 0;
+
+    if (!this.cacheRevalidate) {
+      console.warn("cache time not set");
     }
   }
 
@@ -34,7 +44,7 @@ export class BackendClient {
     endpoint: string,
     options: BackendRequestOptions = {},
   ): Promise<Response> {
-    const { method = "GET", body, isJson = true } = options;
+    const { method = "GET", body, isJson = true, tags } = options;
 
     const url = `${this.baseUrl}${
       endpoint.startsWith("/") ? endpoint : `/${endpoint}`
@@ -42,13 +52,22 @@ export class BackendClient {
 
     const headers = await this.getHeaders(isJson);
 
-    const fetchOptions: RequestInit = {
+    const fetchOptions: RequestInit & {
+      next?: { tags?: string[]; revalidate?: number };
+    } = {
       method,
       headers,
     };
 
     if (body) {
       fetchOptions.body = JSON.stringify(body);
+    }
+
+    if (method === "GET" && tags) {
+      fetchOptions.next = {
+        tags,
+        revalidate: this.cacheRevalidate,
+      };
     }
 
     const response = await fetch(url, fetchOptions);
@@ -71,10 +90,12 @@ export class BackendClient {
     }
   }
 
-  async get(endpoint: string): Promise<Response> {
-    return this.request(endpoint, { method: "GET" });
+  async get(
+    endpoint: string,
+    options?: Omit<BackendRequestOptions, "method" | "body">,
+  ): Promise<Response> {
+    return this.request(endpoint, { method: "GET", ...options });
   }
-
   async post(endpoint: string, body: unknown): Promise<Response> {
     return this.request(endpoint, { method: "POST", body, isJson: true });
   }

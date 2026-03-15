@@ -78,6 +78,7 @@ export interface TransactionSummary {
   date: string;
 
   categoryName?: string;
+  categoryId?: ID;
 }
 
 export interface Transaction extends TransactionSummary {

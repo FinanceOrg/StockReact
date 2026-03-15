@@ -31,6 +31,7 @@ const eslintConfig = [
           patterns: ["../*", "../../*", "../../../*"],
         },
       ],
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "import/order": [
         "error",
         {
