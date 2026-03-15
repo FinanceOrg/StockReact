@@ -8,8 +8,9 @@ import { z } from "zod";
 
 import { transactionCategoryClient } from "@/clients/TransactionCategoryClient";
 import { transactionClient } from "@/clients/TransactionClient";
+import { FormInputItem } from "@/components/input/input";
+import { FormSelectItem } from "@/components/input/select";
 import { Button } from "@/components/ui/button";
-import DateTimePicker from "@/components/ui/datetime-picker";
 import {
   Dialog,
   DialogContent,
@@ -18,30 +19,18 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { TransactionCategory, TransactionSummary } from "@/types/domain";
 
 const transactionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  amount: z.number().positive("Amount must be greater than 0"),
+  amount: z
+    .number({ message: "Amount is required" })
+    .positive("Amount must be greater than 0"),
   date: z.string().min(1, "Date is required"),
   type: z.enum(["income", "expense"]),
   categoryName: z.string().optional(),
+  categoryId: z.number(),
 });
 
 type FormValues = z.infer<typeof transactionSchema>;
@@ -67,10 +56,11 @@ export default function TransactionModal({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       name: "",
-      amount: 0,
+      amount: NaN,
       date: "",
       type: "income",
       categoryName: "",
+      categoryId: 0,
     },
   });
 
@@ -107,17 +97,19 @@ export default function TransactionModal({
       reset({
         name: transaction.name,
         amount: transaction.amount,
-        date: transaction.date,
+        date: format(new Date(transaction.date), "yyyy-MM-dd HH:mm:ss"),
         type: validType,
         categoryName: transaction.categoryName ?? "",
+        categoryId: transaction.categoryId,
       });
     } else {
       reset({
         name: "",
-        amount: 0,
+        amount: NaN,
         date: "",
         type: "income",
         categoryName: "",
+        categoryId: 0,
       });
     }
   }, [transaction, open, reset]);
@@ -139,7 +131,6 @@ export default function TransactionModal({
 
         onSuccess?.(result);
         onOpenChange(false);
-        reset();
       } else {
         // result = await transactionClient.create(payload);
       }
@@ -164,112 +155,55 @@ export default function TransactionModal({
 
         <Form {...form}>
           <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
-            {/* Name */}
-            <FormField
+            <FormInputItem
               control={form.control}
               name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Transaction name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Name"
+              placeholder="Transaction name"
             />
 
-            {/* Amount */}
-            <FormField
+            <FormInputItem
               control={form.control}
               name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Amount"
+              type="number"
+              step="0.01"
+              parseValue={(value) => (value === "" ? NaN : Number(value))}
+              formatValue={(value) => (isNaN(value) ? "" : value)}
             />
 
-            {/* Date & Time */}
-            <FormField
+            <FormInputItem
               control={form.control}
               name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date & Time</FormLabel>
-                  <FormControl>
-                    <DateTimePicker
-                      value={field.value ? new Date(field.value) : undefined}
-                      onChange={(date) =>
-                        field.onChange(date ? date.toISOString() : "")
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Date"
+              type="datetime-local"
+              formatValue={(value) => value ?? ""}
             />
 
-            {/* Type */}
-            <FormField
+            <FormSelectItem
               control={form.control}
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="income">Income</SelectItem>
-                      <SelectItem value="expense">Expense</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Type"
+              placeholder="Select type"
+              options={[
+                { value: "income", label: "Income" },
+                { value: "expense", label: "Expense" },
+              ]}
+              widthClass="sm:w-1/3"
             />
 
-            {/* Category */}
-            <FormField
+            <FormSelectItem
               control={form.control}
-              name="categoryName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              name="categoryId"
+              label="Category"
+              placeholder="Select category"
+              parseValue={(value) => Number(value)}
+              formatValue={(value) => String(value ?? "")}
+              options={categories.map((category) => ({
+                value: category.id.toString(),
+                label: category.name,
+              }))}
+              widthClass="sm:w-1/3"
             />
 
             <DialogFooter>

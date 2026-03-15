@@ -3,23 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { authClient } from "@/clients/AuthClient";
+import { FormInputItem } from "@/components/input/input";
+import { Password } from "@/components/input/password";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Password } from "@/components/ui/password";
+import { Form } from "@/components/ui/form";
 import { loginSchema } from "@/validators/auth.schema";
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -39,10 +32,19 @@ export default function LoginPage() {
   const tmpLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
   const [authError, setAuthError] = useState<string | null>(null);
 
+  const prevEmail = useRef(email);
+  const prevPassword = useRef(password);
+
   useEffect(() => {
-    if (authError) {
+    const emailChanged = prevEmail.current !== email;
+    const passwordChanged = prevPassword.current !== password;
+
+    if ((emailChanged || passwordChanged) && authError) {
       setAuthError(null);
     }
+
+    prevEmail.current = email;
+    prevPassword.current = password;
   }, [email, password, authError]);
 
   const [fetching, setFetching] = useState<boolean>(false);
@@ -84,18 +86,11 @@ export default function LoginPage() {
             </p>
           )}
 
-          <FormField
+          <FormInputItem
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            type="text"
           />
 
           <div>
