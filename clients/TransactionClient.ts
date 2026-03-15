@@ -1,5 +1,5 @@
 import { DeleteResponse } from "@/types/api";
-import { Transaction } from "@/types/domain";
+import { ID, Transaction } from "@/types/domain";
 import {
   CreateTransactionInput,
   UpdateTransactionInput,
@@ -14,7 +14,7 @@ export class TransactionClient {
     };
   }
 
-  async getByAssetId(id: string | number): Promise<Transaction[]> {
+  async getByAssetId(id: ID): Promise<Transaction[]> {
     const res = await fetch(`${this.baseUrl}/assets/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -43,7 +43,7 @@ export class TransactionClient {
     return res.json();
   }
 
-  async show<T extends Transaction = Transaction>(id: string): Promise<T> {
+  async show<T extends Transaction = Transaction>(id: ID): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -77,7 +77,7 @@ export class TransactionClient {
   }
 
   async update<T extends Transaction = Transaction>(
-    id: string,
+    id: ID,
     data: UpdateTransactionInput,
   ): Promise<T> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
@@ -95,7 +95,7 @@ export class TransactionClient {
     return res.json();
   }
 
-  async delete(id: string): Promise<DeleteResponse> {
+  async delete(id: ID): Promise<DeleteResponse> {
     const res = await fetch(`${this.baseUrl}/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },

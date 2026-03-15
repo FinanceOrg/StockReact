@@ -13,7 +13,7 @@ import {
 export class AssetCategoryService {
   async getAll(): Promise<Category[]> {
     const response = await backendClient.get("/asset-categories", {
-      tags: ["tranasctions"],
+      tags: ["asset-categories"],
     });
 
     if (!response.ok) {

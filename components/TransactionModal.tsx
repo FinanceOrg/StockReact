@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,7 +21,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { TransactionCategory, TransactionSummary } from "@/types/domain";
+import { ID, TransactionCategory, TransactionSummary } from "@/types/domain";
 
 const transactionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
@@ -36,21 +37,26 @@ const transactionSchema = z.object({
 type FormValues = z.infer<typeof transactionSchema>;
 
 type Props = {
+  transaction: TransactionSummary | null;
+  assetId: ID;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction: TransactionSummary | null;
-  transactionId: number | null;
   onSuccess?: (transaction: TransactionSummary) => void;
+  onDelete?: (id: number) => void;
 };
 
 export default function TransactionModal({
+  transaction,
+  assetId,
   open,
   onOpenChange,
-  transactionId,
-  transaction,
   onSuccess,
+  onDelete,
 }: Props) {
+  const isEdit = !!transaction?.id;
+  const router = useRouter();
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(transactionSchema),
@@ -60,7 +66,7 @@ export default function TransactionModal({
       date: "",
       type: "income",
       categoryName: "",
-      categoryId: 0,
+      categoryId: 1,
     },
   });
 
@@ -109,37 +115,57 @@ export default function TransactionModal({
         date: "",
         type: "income",
         categoryName: "",
-        categoryId: 0,
+        categoryId: 1,
       });
     }
   }, [transaction, open, reset]);
 
   const onFormSubmit = async (data: FormValues) => {
     try {
-      const payload = {
-        ...data,
-        date: format(new Date(data.date), "yyyy-MM-dd HH:mm:ss"),
-      };
-
       let result: TransactionSummary;
 
-      if (transactionId) {
-        result = await transactionClient.update(
-          transactionId.toString(),
-          payload,
-        );
+      if (transaction?.id) {
+        const payload = {
+          ...data,
+          date: format(new Date(data.date), "yyyy-MM-dd HH:mm:ss"),
+        };
 
-        onSuccess?.(result);
-        onOpenChange(false);
+        result = await transactionClient.update(transaction.id, payload);
       } else {
-        // result = await transactionClient.create(payload);
+        const payload = {
+          ...data,
+          date: format(new Date(data.date), "yyyy-MM-dd HH:mm:ss"),
+          assetId: assetId,
+        };
+        result = await transactionClient.create(payload);
       }
+
+      result.categoryId = data.categoryId;
+      onSuccess?.(result);
+      await router.refresh();
+      onOpenChange(false);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const isEdit = !!transactionId;
+  const onDeleteTransaction = async () => {
+    try {
+      if (!transaction?.id) return;
+
+      setIsDeleting(true);
+
+      await transactionClient.delete(transaction.id);
+
+      onDelete?.(transaction.id);
+      await router.refresh();
+      onOpenChange(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -167,7 +193,7 @@ export default function TransactionModal({
               name="amount"
               label="Amount"
               type="number"
-              step="0.01"
+              step="1"
               parseValue={(value) => (value === "" ? NaN : Number(value))}
               formatValue={(value) => (isNaN(value) ? "" : value)}
             />
@@ -206,18 +232,34 @@ export default function TransactionModal({
               widthClass="sm:w-1/3"
             />
 
-            <DialogFooter>
+            <DialogFooter className="justify-between">
               <Button
                 type="button"
-                variant="secondary"
-                onClick={() => onOpenChange(false)}
+                className="bg-red-500"
+                onClick={onDeleteTransaction}
+                isLoading={isDeleting}
+                disabled={isSubmitting || isDeleting}
               >
-                Cancel
+                Delete
               </Button>
+              <div className="flex gap-2 flex-col-reverse sm:flex-row">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={isSubmitting || isDeleting}
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
 
-              <Button type="submit" isLoading={isSubmitting}>
-                {isEdit ? "Update" : "Create"}
-              </Button>
+                <Button
+                  type="submit"
+                  isLoading={isSubmitting}
+                  disabled={isSubmitting || isDeleting}
+                >
+                  {isEdit ? "Update" : "Create"}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>

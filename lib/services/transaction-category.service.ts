@@ -10,7 +10,9 @@ import {
 
 export class TransactionCategoryService {
   async getAll(): Promise<TransactionCategory[]> {
-    const response = await backendClient.get("/transaction-categories");
+    const response = await backendClient.get("/transaction-categories", {
+      tags: ["transaction-categories"],
+    });
 
     if (!response.ok) {
       throw new Error(
