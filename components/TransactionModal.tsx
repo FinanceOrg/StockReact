@@ -11,24 +11,14 @@ import { transactionCategoryClient } from "@/clients/TransactionCategoryClient";
 import { transactionClient } from "@/clients/TransactionClient";
 import { FormInputItem } from "@/components/input/input";
 import { FormSelectItem } from "@/components/input/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import DeleteConfirmDialog from "@/components/modal/DeleteConfirmDialog";
+import ModalActionFooter from "@/components/modal/ModalActionFooter";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogDescription,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { ID, TransactionCategory, TransactionSummary } from "@/types/domain";
@@ -246,65 +236,26 @@ export default function TransactionModal({
                 widthClass="sm:w-1/3"
               />
 
-              <DialogFooter className="justify-between">
-                {isEdit && (
-                  <Button
-                    type="button"
-                    className="bg-red-500"
-                    onClick={() => setIsDeleteConfirmOpen(true)}
-                    isLoading={isDeleting}
-                    disabled={isSubmitting || isDeleting}
-                  >
-                    Delete
-                  </Button>
-                )}
-                <div className="flex gap-2 flex-col-reverse sm:flex-row">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={isSubmitting || isDeleting}
-                    onClick={() => onOpenChange(false)}
-                  >
-                    Cancel
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    isLoading={isSubmitting}
-                    disabled={isSubmitting || isDeleting}
-                  >
-                    {isEdit ? "Update" : "Create"}
-                  </Button>
-                </div>
-              </DialogFooter>
+              <ModalActionFooter
+                isEdit={isEdit}
+                isSubmitting={isSubmitting}
+                isDeleting={isDeleting}
+                submitLabel={isEdit ? "Update" : "Create"}
+                onCancel={() => onOpenChange(false)}
+                onDelete={() => setIsDeleteConfirmOpen(true)}
+              />
             </form>
           </Form>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
+      <DeleteConfirmDialog
         open={isDeleteConfirmOpen}
         onOpenChange={setIsDeleteConfirmOpen}
-      >
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. The transaction will be permanently
-              deleted.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600"
-              onClick={onDeleteTransaction}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title="Delete transaction?"
+        description="This action cannot be undone. The transaction will be permanently deleted."
+        onConfirm={onDeleteTransaction}
+      />
     </>
   );
 }

@@ -8,22 +8,12 @@ import { z } from "zod";
 
 import { userClient } from "@/clients/UserClient";
 import { FormInputItem } from "@/components/input/input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import DeleteConfirmDialog from "@/components/modal/DeleteConfirmDialog";
+import ModalActionFooter from "@/components/modal/ModalActionFooter";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -187,64 +177,26 @@ export default function UserModal({
                 type="password"
               />
 
-              <DialogFooter className="justify-between">
-                {isEdit && (
-                  <Button
-                    type="button"
-                    className="bg-red-500"
-                    onClick={() => setIsDeleteConfirmOpen(true)}
-                    isLoading={isDeleting}
-                    disabled={isSubmitting || isDeleting}
-                  >
-                    Delete
-                  </Button>
-                )}
-                <div className="flex gap-2 flex-col-reverse sm:flex-row">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={isSubmitting || isDeleting}
-                    onClick={() => onOpenChange(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    isLoading={isSubmitting}
-                    disabled={isSubmitting || isDeleting}
-                  >
-                    {isEdit ? "Update" : "Create"}
-                  </Button>
-                </div>
-              </DialogFooter>
+              <ModalActionFooter
+                isEdit={isEdit}
+                isSubmitting={isSubmitting}
+                isDeleting={isDeleting}
+                submitLabel={isEdit ? "Update" : "Create"}
+                onCancel={() => onOpenChange(false)}
+                onDelete={() => setIsDeleteConfirmOpen(true)}
+              />
             </form>
           </Form>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
+      <DeleteConfirmDialog
         open={isDeleteConfirmOpen}
         onOpenChange={setIsDeleteConfirmOpen}
-      >
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete user?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. The user will be permanently
-              deleted.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600"
-              onClick={onDeleteUser}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title="Delete user?"
+        description="This action cannot be undone. The user will be permanently deleted."
+        onConfirm={onDeleteUser}
+      />
     </>
   );
 }
