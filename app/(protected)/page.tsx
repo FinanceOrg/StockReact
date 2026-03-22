@@ -8,7 +8,7 @@ export default async function Home() {
   const assets = await assetService.getAll();
 
   return (
-    <div>
+    <div className="pb-2">
       <Card className="mb-8 flex justify-between items-center sm:w-[400px]">
         <div className="text-2xl">Balance:</div>
         <div className="text-xl font-bold">

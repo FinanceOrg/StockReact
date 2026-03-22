@@ -72,7 +72,7 @@ export class AssetService {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const response = await backendClient.put(`/assets/${id}`, parsed.data);
+    const response = await backendClient.patch(`/assets/${id}`, parsed.data);
 
     if (!response.ok) {
       let errorMessage = `Failed to update asset: ${response.status}`;

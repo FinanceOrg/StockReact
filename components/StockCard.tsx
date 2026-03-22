@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 
+import AssetCategoryLabel from "@/components/AssetCategoryLabel";
 import Card from "@/components/Card";
 import { Asset } from "@/types/domain";
 
@@ -75,15 +76,7 @@ export default function StockCard(asset: Asset) {
           <div style={{ color: vendorColor }} className="text-2xl font-bold">
             {asset.name}
           </div>
-          <div
-            style={{
-              color: category.style?.color,
-              backgroundColor: category.style?.bgColor,
-            }}
-            className={`py-1 px-2 bg-gray-500 rounded-2xl`}
-          >
-            {category.name}
-          </div>
+          <AssetCategoryLabel category={category} />
         </div>
       </Link>
     </Card>
