@@ -1,10 +1,10 @@
 import Card from "@/components/Card";
 import StockCard from "@/components/StockCard";
-import { getCurrentUser } from "@/lib/server/userService";
 import { assetService } from "@/lib/services/asset.service";
+import { userService } from "@/lib/services/user.service";
 
 export default async function Home() {
-  const user = await getCurrentUser();
+  const user = await userService.getCurrentUser();
   const assets = await assetService.getAll();
 
   return (

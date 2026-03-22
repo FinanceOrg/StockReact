@@ -4,7 +4,7 @@ import React from "react";
 import { UserProvider } from "@/app/(app)/UserProvider";
 import Menu from "@/components/Menu/Menu";
 import SideMenu from "@/components/Menu/SideMenu";
-import { getCurrentUser } from "@/lib/server/userService";
+import { userService } from "@/lib/services/user.service";
 
 type UserLayoutProps = {
   menuTitle?: string;
@@ -18,7 +18,7 @@ export default async function UserLayout({
 }: UserLayoutProps) {
   let user = null;
   try {
-    user = await getCurrentUser();
+    user = await userService.getCurrentUser();
   } catch {}
 
   return (

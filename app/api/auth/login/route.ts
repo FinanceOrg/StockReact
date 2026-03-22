@@ -1,43 +1,43 @@
 import { NextResponse } from "next/server";
 
 import { validate } from "@/lib/api/validation";
+import { authService } from "@/lib/services/auth.service";
 import { loginSchema } from "@/validators/auth.schema";
 
 export async function POST(req: Request) {
-  const baseUrl = process.env.API_BASE_URL;
-  const body = await req.json();
+  try {
+    const body = await req.json();
+    const parsed = validate(loginSchema, body);
 
-  const parsed = validate(loginSchema, body);
-  if (!parsed.success) {
-    return parsed.response;
+    if (!parsed.success) {
+      return parsed.response;
+    }
+
+    const { token, user } = await authService.login(parsed.data);
+    const response = NextResponse.json({ success: true }, { status: 200 });
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    response.cookies.set("id", user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return response;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to login";
+
+    if (message.includes("Invalid credentials")) {
+      return NextResponse.json({ error: message }, { status: 401 });
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const backendRes = await fetch(`${baseUrl}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsed.data),
-  });
-
-  if (!backendRes.ok) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  const { token, user } = await backendRes.json();
-  const response = NextResponse.json({ success: true });
-
-  response.cookies.set("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
-
-  response.cookies.set("id", user.id, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
-
-  return response;
 }
