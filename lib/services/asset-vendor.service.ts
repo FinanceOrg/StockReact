@@ -78,7 +78,7 @@ export class AssetVendorService {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const response = await backendClient.put(
+    const response = await backendClient.patch(
       `/asset-vendors/${id}`,
       parsed.data,
     );

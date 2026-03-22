@@ -76,7 +76,7 @@ export default function LoginPage() {
           STOCK
         </div>
       </div>
-      <h1 className="mb-1">Log in</h1>
+      <h1 className="auth-header">Log in</h1>
       <p className="mb-6 text-gray-500">Continue to Stock</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 mb-5">

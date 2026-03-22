@@ -4,6 +4,7 @@ interface BackendRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: unknown;
   isJson?: boolean;
+  cache?: RequestCache;
 
   tags?: string[];
   revalidate?: number;
@@ -44,7 +45,7 @@ export class BackendClient {
     endpoint: string,
     options: BackendRequestOptions = {},
   ): Promise<Response> {
-    const { method = "GET", body, isJson = true, tags } = options;
+    const { method = "GET", body, isJson = true, tags, cache } = options;
 
     const url = `${this.baseUrl}${
       endpoint.startsWith("/") ? endpoint : `/${endpoint}`
@@ -57,6 +58,7 @@ export class BackendClient {
     } = {
       method,
       headers,
+      cache,
     };
 
     if (body) {

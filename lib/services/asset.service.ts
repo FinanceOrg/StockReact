@@ -9,7 +9,9 @@ import {
 
 export class AssetService {
   async getAll(): Promise<Asset[]> {
-    const response = await backendClient.get("/assets");
+    const response = await backendClient.get("/assets", {
+      cache: "no-store",
+    });
     const assetsDTO = await response.json();
     const assets = mapAssetIndex(assetsDTO);
 

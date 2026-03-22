@@ -1,5 +1,5 @@
+import RawChart from "@/components/AssetChart";
 import AssetTransactions from "@/components/AssetTransactions";
-import RawChart from "@/components/SampleChart";
 import { assetService } from "@/lib/services/asset.service";
 import { transactionService } from "@/lib/services/transaction.service";
 

@@ -79,7 +79,7 @@ export class AssetCategoryService {
       throw new Error(`Validation failed: ${errors}`);
     }
 
-    const response = await backendClient.put(
+    const response = await backendClient.patch(
       `/asset-categories/${id}`,
       parsed.data,
     );

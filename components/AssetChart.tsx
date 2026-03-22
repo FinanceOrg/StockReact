@@ -6,6 +6,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  Filler,
   Title,
   Tooltip,
   Legend,
@@ -22,12 +23,13 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  Filler,
   Title,
   Tooltip,
   Legend,
 );
 
-type SampleChartProps = {
+type AssetChartProps = {
   transactions: Transaction[];
   title?: string;
 };
@@ -48,10 +50,10 @@ const whiteBackgroundPlugin: Plugin<"line"> = {
   },
 };
 
-export default function SampleChart({
+export default function AssetChart({
   transactions,
   title = "Net Cash Flow",
-}: SampleChartProps) {
+}: AssetChartProps) {
   // 1️⃣ Sort by date
   const sorted = [...transactions].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),

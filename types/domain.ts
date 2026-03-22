@@ -3,12 +3,12 @@
 export type ID = number;
 
 export interface Style {
-  color: string;
+  color?: string;
 }
 
 export interface CategoryStyle extends Style {
-  image: string;
-  bgColor: string;
+  image?: string;
+  bgColor?: string;
 }
 
 export interface Currency {

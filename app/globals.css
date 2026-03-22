@@ -87,8 +87,8 @@ body,
 }
 
 @layer utilities {
-  h1 {
-    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  h1.auth-header {
+    @apply text-3xl md:text-4xl font-bold tracking-tight mb-1;
   }
 
   h2 {
@@ -97,5 +97,9 @@ body,
 
   h3 {
     @apply text-xl md:text-2xl font-semibold;
+  }
+
+  h1 {
+    @apply text-2xl md:text-3xl font-bold tracking-tight mb-6;
   }
 }

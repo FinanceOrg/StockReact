@@ -11,6 +11,16 @@ import { transactionCategoryClient } from "@/clients/TransactionCategoryClient";
 import { transactionClient } from "@/clients/TransactionClient";
 import { FormInputItem } from "@/components/input/input";
 import { FormSelectItem } from "@/components/input/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -57,6 +67,7 @@ export default function TransactionModal({
   const router = useRouter();
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(transactionSchema),
@@ -168,102 +179,132 @@ export default function TransactionModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{isEdit ? "Update" : "Create"} transaction</DialogTitle>
-          <DialogDescription>
-            {isEdit
-              ? "Modify the transaction details below."
-              : "Fill in the details to create a new transaction."}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {isEdit ? "Update" : "Create"} transaction
+            </DialogTitle>
+            <DialogDescription>
+              {isEdit
+                ? "Modify the transaction details below."
+                : "Fill in the details to create a new transaction."}
+            </DialogDescription>
+          </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
-            <FormInputItem
-              control={form.control}
-              name="name"
-              label="Name"
-              placeholder="Transaction name"
-            />
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
+              <FormInputItem
+                control={form.control}
+                name="name"
+                label="Name"
+                placeholder="Transaction name"
+              />
 
-            <FormInputItem
-              control={form.control}
-              name="amount"
-              label="Amount"
-              type="number"
-              step="1"
-              parseValue={(value) => (value === "" ? NaN : Number(value))}
-              formatValue={(value) => (isNaN(value) ? "" : value)}
-            />
+              <FormInputItem
+                control={form.control}
+                name="amount"
+                label="Amount"
+                type="number"
+                step="1"
+                parseValue={(value) => (value === "" ? NaN : Number(value))}
+                formatValue={(value) => (isNaN(value) ? "" : value)}
+              />
 
-            <FormInputItem
-              control={form.control}
-              name="date"
-              label="Date"
-              type="datetime-local"
-              formatValue={(value) => value ?? ""}
-            />
+              <FormInputItem
+                control={form.control}
+                name="date"
+                label="Date"
+                type="datetime-local"
+                formatValue={(value) => value ?? ""}
+              />
 
-            <FormSelectItem
-              control={form.control}
-              name="type"
-              label="Type"
-              placeholder="Select type"
-              options={[
-                { value: "income", label: "Income" },
-                { value: "expense", label: "Expense" },
-              ]}
-              widthClass="sm:w-1/3"
-            />
+              <FormSelectItem
+                control={form.control}
+                name="type"
+                label="Type"
+                placeholder="Select type"
+                options={[
+                  { value: "income", label: "Income" },
+                  { value: "expense", label: "Expense" },
+                ]}
+                widthClass="sm:w-1/3"
+              />
 
-            <FormSelectItem
-              control={form.control}
-              name="categoryId"
-              label="Category"
-              placeholder="Select category"
-              parseValue={(value) => Number(value)}
-              formatValue={(value) => String(value ?? "")}
-              options={categories.map((category) => ({
-                value: category.id.toString(),
-                label: category.name,
-              }))}
-              widthClass="sm:w-1/3"
-            />
+              <FormSelectItem
+                control={form.control}
+                name="categoryId"
+                label="Category"
+                placeholder="Select category"
+                parseValue={(value) => Number(value)}
+                formatValue={(value) => String(value ?? "")}
+                options={categories.map((category) => ({
+                  value: category.id.toString(),
+                  label: category.name,
+                }))}
+                widthClass="sm:w-1/3"
+              />
 
-            <DialogFooter className="justify-between">
-              <Button
-                type="button"
-                className="bg-red-500"
-                onClick={onDeleteTransaction}
-                isLoading={isDeleting}
-                disabled={isSubmitting || isDeleting}
-              >
-                Delete
-              </Button>
-              <div className="flex gap-2 flex-col-reverse sm:flex-row">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={isSubmitting || isDeleting}
-                  onClick={() => onOpenChange(false)}
-                >
-                  Cancel
-                </Button>
+              <DialogFooter className="justify-between">
+                {isEdit && (
+                  <Button
+                    type="button"
+                    className="bg-red-500"
+                    onClick={() => setIsDeleteConfirmOpen(true)}
+                    isLoading={isDeleting}
+                    disabled={isSubmitting || isDeleting}
+                  >
+                    Delete
+                  </Button>
+                )}
+                <div className="flex gap-2 flex-col-reverse sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={isSubmitting || isDeleting}
+                    onClick={() => onOpenChange(false)}
+                  >
+                    Cancel
+                  </Button>
 
-                <Button
-                  type="submit"
-                  isLoading={isSubmitting}
-                  disabled={isSubmitting || isDeleting}
-                >
-                  {isEdit ? "Update" : "Create"}
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                  <Button
+                    type="submit"
+                    isLoading={isSubmitting}
+                    disabled={isSubmitting || isDeleting}
+                  >
+                    {isEdit ? "Update" : "Create"}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={isDeleteConfirmOpen}
+        onOpenChange={setIsDeleteConfirmOpen}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The transaction will be permanently
+              deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={onDeleteTransaction}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
