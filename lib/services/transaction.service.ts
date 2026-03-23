@@ -1,4 +1,10 @@
 import { backendClient } from "@/lib/backend/backend.client";
+import {
+  assertResponseOk,
+  getDeleteResponse,
+  requireId,
+  throwValidationError,
+} from "@/lib/services/service.helper";
 import { transactionCategoryService } from "@/lib/services/transaction-category.service";
 import { mapTransactionIndex } from "@/mappers/transactionMapper";
 import { DeleteResponse } from "@/types/api";
@@ -10,24 +16,16 @@ import {
 
 export class TransactionService {
   async getByAssetId(id: string | number): Promise<Transaction[]> {
-    if (!id) {
-      throw new Error("Transaction ID is required");
-    }
+    requireId(id, "Transaction");
 
     const [transactionResponse, categories] = await Promise.all([
       backendClient.get(`/assets/${id}/transactions`),
       transactionCategoryService.getAll(),
     ]);
 
-    if (!transactionResponse.ok) {
-      if (transactionResponse.status === 404) {
-        throw new Error("Transaction not found");
-      }
-
-      throw new Error(
-        `Failed to fetch transaction: ${transactionResponse.status}`,
-      );
-    }
+    await assertResponseOk(transactionResponse, "Failed to fetch transaction", {
+      notFoundMessage: "Transaction not found",
+    });
 
     const transactionsDTO = await transactionResponse.json();
 
@@ -37,18 +35,12 @@ export class TransactionService {
   }
 
   async getById(id: string): Promise<Transaction> {
-    if (!id) {
-      throw new Error("Transaction ID is required");
-    }
+    requireId(id, "Transaction");
 
     const response = await backendClient.get(`/transactions/${id}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Transaction not found");
-      }
-      throw new Error(`Failed to fetch transaction: ${response.status}`);
-    }
+    await assertResponseOk(response, "Failed to fetch transaction", {
+      notFoundMessage: "Transaction not found",
+    });
 
     return await response.json();
   }
@@ -56,37 +48,21 @@ export class TransactionService {
   async create(data: unknown): Promise<Transaction> {
     const parsed = createTransactionSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.post("/transactions", parsed.data);
-
-    if (!response.ok) {
-      let errorMessage = `Failed to create transaction: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to create transaction");
 
     return await response.json();
   }
 
   async update(id: string, data: unknown): Promise<Transaction> {
-    if (!id) {
-      throw new Error("Transaction ID is required");
-    }
+    requireId(id, "Transaction");
 
     const parsed = updateTransactionSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.patch(
@@ -94,14 +70,7 @@ export class TransactionService {
       parsed.data,
     );
 
-    if (!response.ok) {
-      let errorMessage = `Failed to update transaction: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to update transaction");
 
     const result = await response.json();
 
@@ -109,26 +78,15 @@ export class TransactionService {
   }
 
   async delete(id: string): Promise<DeleteResponse> {
-    if (!id) {
-      throw new Error("Transaction ID is required");
-    }
+    requireId(id, "Transaction");
 
     const response = await backendClient.delete(`/transactions/${id}`);
+    await assertResponseOk(response, "Failed to delete transaction");
 
-    if (!response.ok) {
-      let errorMessage = `Failed to delete transaction: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
-
-    try {
-      return await response.json();
-    } catch {
-      return { success: true, message: "Transaction deleted successfully" };
-    }
+    return await getDeleteResponse(
+      response,
+      "Transaction deleted successfully",
+    );
   }
 }
 

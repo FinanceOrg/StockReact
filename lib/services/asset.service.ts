@@ -1,4 +1,10 @@
 import { backendClient } from "@/lib/backend/backend.client";
+import {
+  assertResponseOk,
+  getDeleteResponse,
+  requireId,
+  throwValidationError,
+} from "@/lib/services/service.helper";
 import { mapAssetIndex, mapAssetShow } from "@/mappers/assetMapper";
 import { DeleteResponse } from "@/types/api";
 import { Asset } from "@/types/domain";
@@ -12,6 +18,8 @@ export class AssetService {
     const response = await backendClient.get("/assets", {
       cache: "no-store",
     });
+    await assertResponseOk(response, "Failed to fetch assets");
+
     const assetsDTO = await response.json();
     const assets = mapAssetIndex(assetsDTO);
 
@@ -19,18 +27,13 @@ export class AssetService {
   }
 
   async getById(id: string | number): Promise<Asset> {
-    if (!id) {
-      throw new Error("Asset ID is required");
-    }
+    requireId(id, "Asset");
 
     const response = await backendClient.get(`/assets/${id}`);
+    await assertResponseOk(response, "Failed to fetch asset", {
+      notFoundMessage: "Asset not found",
+    });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Asset not found");
-      }
-      throw new Error(`Failed to fetch asset: ${response.status}`);
-    }
     const assetDTO = await response.json();
 
     return mapAssetShow(assetDTO);
@@ -39,74 +42,36 @@ export class AssetService {
   async create(data: unknown): Promise<Asset> {
     const parsed = createAssetSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.post("/assets", parsed.data);
-
-    if (!response.ok) {
-      let errorMessage = `Failed to create asset: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to create asset");
 
     return await response.json();
   }
 
   async update(id: string, data: unknown): Promise<Asset> {
-    if (!id) {
-      throw new Error("Asset ID is required");
-    }
+    requireId(id, "Asset");
 
     const parsed = updateAssetSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.patch(`/assets/${id}`, parsed.data);
-
-    if (!response.ok) {
-      let errorMessage = `Failed to update asset: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to update asset");
 
     return await response.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
-    if (!id) {
-      throw new Error("Asset ID is required");
-    }
+    requireId(id, "Asset");
 
     const response = await backendClient.delete(`/assets/${id}`);
+    await assertResponseOk(response, "Failed to delete asset");
 
-    if (!response.ok) {
-      let errorMessage = `Failed to delete asset: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
-
-    try {
-      return await response.json();
-    } catch {
-      return { success: true, message: "Asset deleted successfully" };
-    }
+    return await getDeleteResponse(response, "Asset deleted successfully");
   }
 }
 

@@ -1,6 +1,12 @@
 import { cookies } from "next/headers";
 
 import { backendClient } from "@/lib/backend/backend.client";
+import {
+  assertResponseOk,
+  getDeleteResponse,
+  requireId,
+  throwValidationError,
+} from "@/lib/services/service.helper";
 import { mapUserIndex, mapUserShow } from "@/mappers/userMapper";
 import { DeleteResponse } from "@/types/api";
 import { User } from "@/types/domain";
@@ -11,10 +17,7 @@ export class UserService {
     const response = await backendClient.get("/users", {
       tags: ["users"],
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch users: ${response.status}`);
-    }
+    await assertResponseOk(response, "Failed to fetch users");
 
     const usersDTO = await response.json();
 
@@ -22,19 +25,12 @@ export class UserService {
   }
 
   async getById(id: string): Promise<User> {
-    if (!id) {
-      throw new Error("User ID is required");
-    }
+    requireId(id, "User");
 
     const response = await backendClient.get(`/users/${id}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("User not found");
-      }
-
-      throw new Error(`Failed to fetch user: ${response.status}`);
-    }
+    await assertResponseOk(response, "Failed to fetch user", {
+      notFoundMessage: "User not found",
+    });
 
     const userDTO = await response.json();
 
@@ -44,22 +40,11 @@ export class UserService {
   async create(data: unknown): Promise<User> {
     const parsed = createUserSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.post("/users", parsed.data);
-
-    if (!response.ok) {
-      let errorMessage = `Failed to create user: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to create user");
 
     const userDTO = await response.json();
 
@@ -67,16 +52,11 @@ export class UserService {
   }
 
   async update(id: string, data: unknown): Promise<User> {
-    if (!id) {
-      throw new Error("User ID is required");
-    }
+    requireId(id, "User");
 
     const parsed = updateUserSchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const payload = {
@@ -86,14 +66,7 @@ export class UserService {
 
     const response = await backendClient.patch(`/users/${id}`, payload);
 
-    if (!response.ok) {
-      let errorMessage = `Failed to update user: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to update user");
 
     const userDTO = await response.json();
 
@@ -101,26 +74,12 @@ export class UserService {
   }
 
   async delete(id: string): Promise<DeleteResponse> {
-    if (!id) {
-      throw new Error("User ID is required");
-    }
+    requireId(id, "User");
 
     const response = await backendClient.delete(`/users/${id}`);
+    await assertResponseOk(response, "Failed to delete user");
 
-    if (!response.ok) {
-      let errorMessage = `Failed to delete user: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
-
-    try {
-      return await response.json();
-    } catch {
-      return { success: true, message: "User deleted successfully" };
-    }
+    return await getDeleteResponse(response, "User deleted successfully");
   }
 
   async getCurrentUser(): Promise<User> {

@@ -1,4 +1,10 @@
 import { backendClient } from "@/lib/backend/backend.client";
+import {
+  assertResponseOk,
+  getDeleteResponse,
+  requireId,
+  throwValidationError,
+} from "@/lib/services/service.helper";
 import { mapAssetCategoryShow } from "@/mappers/assetCategoryMapper";
 import { mapTransactionCategoryIndex } from "@/mappers/transactionCategoryMapper";
 import { DeleteResponse } from "@/types/api";
@@ -13,12 +19,7 @@ export class TransactionCategoryService {
     const response = await backendClient.get("/transaction-categories", {
       tags: ["transaction-categories"],
     });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch transaction categories: ${response.status}`,
-      );
-    }
+    await assertResponseOk(response, "Failed to fetch transaction categories");
 
     const categoryDTO = await response.json();
 
@@ -26,20 +27,12 @@ export class TransactionCategoryService {
   }
 
   async getById(id: string): Promise<TransactionCategory> {
-    if (!id) {
-      throw new Error("Transaction category ID is required");
-    }
+    requireId(id, "Transaction category");
 
     const response = await backendClient.get(`/transaction-categories/${id}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Transaction category not found");
-      }
-      throw new Error(
-        `Failed to fetch transaction category: ${response.status}`,
-      );
-    }
+    await assertResponseOk(response, "Failed to fetch transaction category", {
+      notFoundMessage: "Transaction category not found",
+    });
 
     const categoryDTO = await response.json();
 
@@ -49,10 +42,7 @@ export class TransactionCategoryService {
   async create(data: unknown): Promise<TransactionCategory> {
     const parsed = createTransactionCategorySchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.post(
@@ -60,29 +50,17 @@ export class TransactionCategoryService {
       parsed.data,
     );
 
-    if (!response.ok) {
-      let errorMessage = `Failed to create transaction category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to create transaction category");
 
     return await response.json();
   }
 
   async update(id: string, data: unknown): Promise<TransactionCategory> {
-    if (!id) {
-      throw new Error("Transaction category ID is required");
-    }
+    requireId(id, "Transaction category");
 
     const parsed = updateTransactionCategorySchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.put(
@@ -90,44 +68,23 @@ export class TransactionCategoryService {
       parsed.data,
     );
 
-    if (!response.ok) {
-      let errorMessage = `Failed to update transaction category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to update transaction category");
 
     return await response.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
-    if (!id) {
-      throw new Error("Transaction category ID is required");
-    }
+    requireId(id, "Transaction category");
 
     const response = await backendClient.delete(
       `/transaction-categories/${id}`,
     );
+    await assertResponseOk(response, "Failed to delete transaction category");
 
-    if (!response.ok) {
-      let errorMessage = `Failed to delete transaction category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
-
-    try {
-      return await response.json();
-    } catch {
-      return {
-        success: true,
-        message: "Transaction category deleted successfully",
-      };
-    }
+    return await getDeleteResponse(
+      response,
+      "Transaction category deleted successfully",
+    );
   }
 }
 

@@ -1,5 +1,11 @@
 import { backendClient } from "@/lib/backend/backend.client";
 import {
+  assertResponseOk,
+  getDeleteResponse,
+  requireId,
+  throwValidationError,
+} from "@/lib/services/service.helper";
+import {
   mapAssetCategoryIndex,
   mapAssetCategoryShow,
 } from "@/mappers/assetCategoryMapper";
@@ -15,28 +21,19 @@ export class AssetCategoryService {
     const response = await backendClient.get("/asset-categories", {
       tags: ["asset-categories"],
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.status}`);
-    }
+    await assertResponseOk(response, "Failed to fetch categories");
     const categoryDTO = await response.json();
 
     return mapAssetCategoryIndex(categoryDTO);
   }
 
   async getById(id: string): Promise<Category> {
-    if (!id) {
-      throw new Error("Category ID is required");
-    }
+    requireId(id, "Category");
 
     const response = await backendClient.get(`/asset-categories/${id}`);
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error("Category not found");
-      }
-      throw new Error(`Failed to fetch category: ${response.status}`);
-    }
+    await assertResponseOk(response, "Failed to fetch category", {
+      notFoundMessage: "Category not found",
+    });
 
     const categoryDTO = await response.json();
 
@@ -46,37 +43,21 @@ export class AssetCategoryService {
   async create(data: unknown): Promise<Category> {
     const parsed = createCategorySchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.post("/asset-categories", parsed.data);
-
-    if (!response.ok) {
-      let errorMessage = `Failed to create category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to create category");
 
     return await response.json();
   }
 
   async update(id: string, data: unknown): Promise<Category> {
-    if (!id) {
-      throw new Error("Category ID is required");
-    }
+    requireId(id, "Category");
 
     const parsed = updateCategorySchema.safeParse(data);
     if (!parsed.success) {
-      const errors = parsed.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join("; ");
-      throw new Error(`Validation failed: ${errors}`);
+      throwValidationError(parsed.error);
     }
 
     const response = await backendClient.patch(
@@ -84,39 +65,18 @@ export class AssetCategoryService {
       parsed.data,
     );
 
-    if (!response.ok) {
-      let errorMessage = `Failed to update category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
+    await assertResponseOk(response, "Failed to update category");
 
     return await response.json();
   }
 
   async delete(id: string): Promise<DeleteResponse> {
-    if (!id) {
-      throw new Error("Category ID is required");
-    }
+    requireId(id, "Category");
 
     const response = await backendClient.delete(`/asset-categories/${id}`);
+    await assertResponseOk(response, "Failed to delete category");
 
-    if (!response.ok) {
-      let errorMessage = `Failed to delete category: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-      } catch {}
-      throw new Error(errorMessage);
-    }
-
-    try {
-      return await response.json();
-    } catch {
-      return { success: true, message: "Category deleted successfully" };
-    }
+    return await getDeleteResponse(response, "Category deleted successfully");
   }
 }
 
