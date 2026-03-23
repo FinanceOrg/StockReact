@@ -1,5 +1,29 @@
 import { NextResponse } from "next/server";
 
+function getBaseCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+  };
+}
+
+export function setServerCookie(
+  response: NextResponse,
+  name: string,
+  value: string,
+) {
+  response.cookies.set(name, value, getBaseCookieOptions());
+}
+
+export function removeServerCookie(response: NextResponse, name: string) {
+  response.cookies.set(name, "", {
+    ...getBaseCookieOptions(),
+    expires: new Date(0),
+  });
+}
+
 export function getHeaders(token: string, isJson: boolean): HeadersInit {
   const headers: HeadersInit = {
     Authorization: `Bearer ${token}`,

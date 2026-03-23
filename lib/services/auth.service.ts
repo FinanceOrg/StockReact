@@ -1,11 +1,16 @@
+import { Role } from "@/types/auth";
 import { LoginInput } from "@/validators/auth.schema";
+
+type LoginUser = {
+  id: number | string;
+  preferredCurrency?: string;
+  roles?: Role[];
+};
 
 export class AuthService {
   private baseUrl = process.env.API_BASE_URL || "";
 
-  async login(
-    data: LoginInput,
-  ): Promise<{ token: string; user: { id: string } }> {
+  async login(data: LoginInput): Promise<{ token: string; user: LoginUser }> {
     if (!this.baseUrl) {
       throw new Error("API_BASE_URL environment variable is not set");
     }
@@ -30,7 +35,7 @@ export class AuthService {
       throw new Error("Invalid login response from backend");
     }
 
-    return payload;
+    return payload as { token: string; user: LoginUser };
   }
 }
 

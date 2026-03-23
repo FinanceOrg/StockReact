@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { setServerCookie } from "@/lib/api/helper";
 import { validate } from "@/lib/api/validation";
 import { authService } from "@/lib/services/auth.service";
+import { getRole } from "@/types/auth";
 import { loginSchema } from "@/validators/auth.schema";
 
 export async function POST(req: Request) {
@@ -16,19 +18,18 @@ export async function POST(req: Request) {
     const { token, user } = await authService.login(parsed.data);
     const response = NextResponse.json({ success: true }, { status: 200 });
 
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    setServerCookie(response, "token", token);
+    setServerCookie(response, "id", String(user.id));
 
-    response.cookies.set("id", user.id, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    if (user.preferredCurrency) {
+      setServerCookie(response, "preferredCurrency", user.preferredCurrency);
+    }
+
+    const role = getRole(user.roles);
+
+    if (role) {
+      setServerCookie(response, "role", role);
+    }
 
     return response;
   } catch (error) {

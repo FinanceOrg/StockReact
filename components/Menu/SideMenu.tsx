@@ -11,7 +11,11 @@ import HomeLogo from "@/icons/home.svg";
 import LogOut from "@/icons/log-out.svg";
 import UserLogo from "@/icons/users.svg";
 
-export default function SideMenu() {
+type SideMenuProps = {
+  isAdmin: boolean;
+};
+
+export default function SideMenu({ isAdmin }: SideMenuProps) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -21,10 +25,15 @@ export default function SideMenu() {
 
   const menuItems = [
     { name: "Home", href: "/", icon: HomeLogo },
-    { name: "Vendors", href: "/vendors", icon: BankLogo },
-    { name: "Labels", href: "/asset-categories", icon: CategoryLogo },
-    { name: "Users", href: "/users", icon: UserLogo },
-  ];
+    { name: "Vendors", href: "/vendors", icon: BankLogo, adminOnly: true },
+    {
+      name: "Labels",
+      href: "/asset-categories",
+      icon: CategoryLogo,
+      adminOnly: true,
+    },
+    { name: "Users", href: "/users", icon: UserLogo, adminOnly: true },
+  ].filter((item) => !item.adminOnly || isAdmin);
 
   const logoutItem = {
     name: "Logout",
