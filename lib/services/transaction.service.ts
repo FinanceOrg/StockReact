@@ -47,6 +47,7 @@ export class TransactionService {
 
   async create(data: unknown): Promise<Transaction> {
     const parsed = createTransactionSchema.safeParse(data);
+
     if (!parsed.success) {
       throwValidationError(parsed.error);
     }

@@ -1,8 +1,13 @@
 "use client";
 
-import clsx from "clsx";
-import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 
+import {
+  ColumnHeaderWithFilter,
+  TextColumnFilter,
+} from "@/components/table/ColumnFilterControls";
+import FilterableDataTable from "@/components/table/FilterableDataTable";
 import { Button } from "@/components/ui/button";
 import { AssetVendor } from "@/types/domain";
 
@@ -39,6 +44,50 @@ export default function VendorList({
     setVendors((prev) => prev.filter((v) => v.id !== id));
   };
 
+  const columns = useMemo<ColumnDef<AssetVendor>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Name">
+            <TextColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3 font-semibold sm:font-normal">
+            {row.original.style?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={row.original.style.image}
+                alt={row.original.name}
+                className="size-7 shrink-0 rounded object-contain"
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+            ) : row.original.style?.color ? (
+              <span
+                className="inline-block size-7 shrink-0 rounded"
+                style={{ backgroundColor: row.original.style.color }}
+              />
+            ) : null}
+            {row.original.name}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Description">
+            <TextColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+        cell: ({ row }) => row.original.description ?? "-",
+      },
+    ],
+    [],
+  );
+
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -46,50 +95,18 @@ export default function VendorList({
       </div>
 
       <div className="mb-4">
-        <div className="hidden sm:flex bg-white rounded-t-lg border-b border-gray-300 px-4">
-          <div className="py-2 sm:basis-1/2">Name</div>
-          <div className="py-2 sm:basis-1/2">Description</div>
-        </div>
-
-        {vendors.length === 0 && (
-          <div className="bg-white rounded-lg px-4 py-6 text-center text-gray-500">
-            No vendors yet. Create your first one!
-          </div>
-        )}
-
-        {vendors.map((vendor, i) => (
-          <div
-            key={vendor.id}
-            onClick={() => openModal(vendor)}
-            className={clsx(
-              "flex flex-wrap sm:flex-nowrap py-3 px-4 bg-white cursor-pointer",
-              "hover:bg-white/70 transition duration-300",
-              i === vendors.length - 1 && "rounded-b-lg",
-              i === 0 && vendors.length > 0 && "rounded-t-lg sm:rounded-t-none",
-            )}
-          >
-            <div className="flex items-center gap-3 sm:basis-1/2 font-bold sm:font-normal">
-              {vendor.style?.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={vendor.style.image}
-                  alt={vendor.name}
-                  className="size-7 rounded object-contain shrink-0"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-              ) : vendor.style?.color ? (
-                <span
-                  className="inline-block size-7 rounded shrink-0"
-                  style={{ backgroundColor: vendor.style.color }}
-                />
-              ) : null}
-              {vendor.name}
-            </div>
-            <div className="sm:basis-1/2 text-sm text-gray-500">
-              {vendor.description ?? "—"}
-            </div>
-          </div>
-        ))}
+        <FilterableDataTable
+          title="Vendors"
+          columns={columns}
+          data={vendors}
+          gridClassName="grid-cols-1 sm:grid-cols-2"
+          emptyText="No vendors yet. Create your first one!"
+          onRowClick={openModal}
+          getMobileLabel={(columnId) => columnId}
+          getCellValueClassName={(_, columnId) =>
+            columnId === "description" ? "text-gray-600" : ""
+          }
+        />
       </div>
 
       <VendorModal

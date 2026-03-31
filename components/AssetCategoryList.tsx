@@ -1,8 +1,13 @@
 "use client";
 
-import clsx from "clsx";
-import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 
+import {
+  ColumnHeaderWithFilter,
+  TextColumnFilter,
+} from "@/components/table/ColumnFilterControls";
+import FilterableDataTable from "@/components/table/FilterableDataTable";
 import { Button } from "@/components/ui/button";
 import { Category } from "@/types/domain";
 
@@ -40,6 +45,45 @@ export default function AssetCategoryList({
     setCategories((prev) => prev.filter((category) => category.id !== id));
   };
 
+  const columns = useMemo<ColumnDef<Category>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Name">
+            <TextColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3 font-semibold sm:font-normal">
+            {(row.original.style?.bgColor || row.original.style?.color) && (
+              <span
+                className="inline-flex min-w-14 shrink-0 justify-center rounded border border-black/10 px-2 py-1 text-xs"
+                style={{
+                  backgroundColor: row.original.style?.bgColor,
+                  color: row.original.style?.color,
+                }}
+              >
+                Aa
+              </span>
+            )}
+            {row.original.name}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Description">
+            <TextColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+        cell: ({ row }) => row.original.description ?? "-",
+      },
+    ],
+    [],
+  );
+
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -47,49 +91,18 @@ export default function AssetCategoryList({
       </div>
 
       <div className="mb-4">
-        <div className="hidden sm:flex bg-white rounded-t-lg border-b border-gray-300 px-4">
-          <div className="py-2 sm:basis-1/2">Name</div>
-          <div className="py-2 sm:basis-1/2">Description</div>
-        </div>
-
-        {categories.length === 0 && (
-          <div className="bg-white rounded-lg px-4 py-6 text-center text-gray-500">
-            No categories yet. Create your first one!
-          </div>
-        )}
-
-        {categories.map((category, index) => (
-          <div
-            key={category.id}
-            onClick={() => openModal(category)}
-            className={clsx(
-              "flex flex-wrap sm:flex-nowrap py-3 px-4 bg-white cursor-pointer",
-              "hover:bg-white/70 transition duration-300",
-              index === categories.length - 1 && "rounded-b-lg",
-              index === 0 &&
-                categories.length > 0 &&
-                "rounded-t-lg sm:rounded-t-none",
-            )}
-          >
-            <div className="flex items-center gap-3 sm:basis-1/2 font-bold sm:font-normal">
-              {(category.style?.bgColor || category.style?.color) && (
-                <span
-                  className="inline-flex min-w-14 justify-center rounded px-2 py-1 text-xs shrink-0 border border-black/10"
-                  style={{
-                    backgroundColor: category.style?.bgColor,
-                    color: category.style?.color,
-                  }}
-                >
-                  Aa
-                </span>
-              )}
-              {category.name}
-            </div>
-            <div className="sm:basis-1/2 text-sm text-gray-500">
-              {category.description ?? "—"}
-            </div>
-          </div>
-        ))}
+        <FilterableDataTable
+          title="Categories"
+          columns={columns}
+          data={categories}
+          gridClassName="grid-cols-1 sm:grid-cols-2"
+          emptyText="No categories yet. Create your first one!"
+          onRowClick={openModal}
+          getMobileLabel={(columnId) => columnId}
+          getCellValueClassName={(_, columnId) =>
+            columnId === "description" ? "text-gray-600" : ""
+          }
+        />
       </div>
 
       <AssetCategoryModal

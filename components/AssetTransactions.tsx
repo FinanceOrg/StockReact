@@ -1,8 +1,28 @@
 "use client";
 
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import {
+  ColumnHeaderWithFilter,
+  DateRangeColumnFilter,
+  NumberRangeColumnFilter,
+  SelectColumnFilter,
+  TextColumnFilter,
+  caseInsensitiveEqualsFilterFn,
+  dateRangeFilterFn,
+  numberRangeFilterFn,
+} from "@/components/table/ColumnFilterControls";
 import { Button } from "@/components/ui/button";
 import { Asset, Transaction } from "@/types/domain";
 
@@ -18,6 +38,8 @@ export default function AssetTransactions({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const [localTransactions, setLocalTransactions] = useState(transactions);
 
@@ -46,6 +68,105 @@ export default function AssetTransactions({
     setLocalTransactions(transactions);
   }, [transactions]);
 
+  const currencySymbol =
+    typeof asset.currency === "string" ? asset.currency : asset.currency.symbol;
+
+  const availableTypes = useMemo(() => {
+    return Array.from(
+      new Set(localTransactions.map((transaction) => transaction.type)),
+    );
+  }, [localTransactions]);
+
+  const typeFilterOptions = useMemo(
+    () => availableTypes.map((type) => ({ value: type, label: type })),
+    [availableTypes],
+  );
+
+  const columns = useMemo<ColumnDef<Transaction>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Name">
+            <TextColumnFilter column={column} placeholder="Filter" />
+          </ColumnHeaderWithFilter>
+        ),
+      },
+      {
+        accessorKey: "amount",
+        filterFn: numberRangeFilterFn<Transaction>(),
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Amount">
+            <NumberRangeColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+        cell: ({ row }) => `${row.original.amount} ${currencySymbol}`,
+      },
+      {
+        accessorKey: "date",
+        filterFn: dateRangeFilterFn<Transaction>(),
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Transaction date">
+            <DateRangeColumnFilter column={column} />
+          </ColumnHeaderWithFilter>
+        ),
+      },
+      {
+        accessorKey: "type",
+        header: ({ column }) => (
+          <ColumnHeaderWithFilter column={column} label="Type">
+            <SelectColumnFilter
+              column={column}
+              options={typeFilterOptions}
+              allLabel="All"
+            />
+          </ColumnHeaderWithFilter>
+        ),
+        filterFn: caseInsensitiveEqualsFilterFn<Transaction>(),
+      },
+    ],
+    [currencySymbol, typeFilterOptions],
+  );
+
+  const table = useReactTable({
+    data: localTransactions,
+    columns,
+    state: {
+      sorting,
+      columnFilters,
+    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const getCellValueClassName = (row: Transaction, columnId: string) => {
+    switch (columnId) {
+      case "name":
+        return "text-lg font-medium sm:text-base sm:font-normal";
+      case "amount":
+        return "text-lg font-medium sm:text-base sm:font-normal";
+      case "date":
+        return "text-gray-600 sm:text-black";
+
+      case "type": {
+        const normalizedType = row.type.toLowerCase();
+
+        return clsx(
+          "w-fit rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide",
+          {
+            "bg-emerald-100 text-emerald-800": normalizedType === "income",
+            "bg-rose-100 text-rose-800": normalizedType === "expense",
+          },
+        );
+      }
+      default:
+        return "";
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -53,44 +174,71 @@ export default function AssetTransactions({
       </div>
 
       <div className="mb-4">
-        <div className="hidden sm:flex bg-white rounded-t-lg border-b border-gray-300 justify-center px-2">
-          <div className="py-2 text-center sm:basis-1/4">Name</div>
-          <div className="py-2 text-center sm:basis-1/4">Amount</div>
-          <div className="py-2 text-center sm:basis-1/4">Transaction date</div>
-          <div className="py-2 text-center sm:basis-1/4">Type</div>
-        </div>
+        <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
+          <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold">
+            Transactions
+          </div>
 
-        {localTransactions.map((row, i) => (
-          <div
-            key={row.id}
-            onClick={() => openModal(row)}
-            className={clsx(
-              "flex flex-wrap sm:flex-nowrap py-2 justify-between px-4 sm:px-2 bg-white cursor-pointer",
-              "sm:bg-white/90 hover:bg-white/70 transition duration-300",
-              i === localTransactions.length - 1 && "rounded-b-lg",
-              i === 0 && "rounded-t-lg sm:rounded-t-none",
-            )}
-          >
-            <div className="sm:text-center sm:basis-1/4 basis-1/2 font-bold sm:font-normal">
-              {row.name}
-            </div>
+          <div className="text-sm">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <div
+                key={headerGroup.id}
+                className="grid grid-cols-2 sm:grid-cols-4 border-b border-gray-200 bg-gray-50"
+              >
+                {headerGroup.headers.map((header) => (
+                  <div key={header.id} className="px-4 py-2 font-medium">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </div>
+                ))}
+              </div>
+            ))}
 
-            <div className="sm:text-center sm:basis-1/4 basis-1/2 text-right">
-              {row.amount}{" "}
-              {typeof asset.currency === "string"
-                ? asset.currency
-                : asset.currency.symbol}
-            </div>
+            <div className="divide-y divide-gray-100">
+              {table.getRowModel().rows.map((tableRow) => (
+                <div
+                  key={tableRow.id}
+                  onClick={() => openModal(tableRow.original)}
+                  className="cursor-pointer py-3 hover:bg-gray-50 sm:grid sm:grid-cols-4 sm:items-center sm:py-2 grid grid-cols-2"
+                >
+                  {tableRow.getVisibleCells().map((cell) => (
+                    <div
+                      key={cell.id}
+                      className={clsx(
+                        "py-1 px-4 sm:py-0 flex sm:block",
+                        cell.column.id === "amount" || cell.column.id === "type"
+                          ? "justify-end"
+                          : "",
+                      )}
+                    >
+                      <div
+                        className={getCellValueClassName(
+                          tableRow.original,
+                          cell.column.id,
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
 
-            <div className="sm:text-center sm:basis-1/4 basis-1/2">
-              {row.date}
-            </div>
-
-            <div className="sm:text-center sm:basis-1/4 hidden sm:block">
-              {row.type}
+              {table.getRowModel().rows.length === 0 && (
+                <div className="px-4 py-6 text-center text-gray-500">
+                  No transactions yet.
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        </div>
 
         <TransactionModal
           transaction={selectedTransaction}

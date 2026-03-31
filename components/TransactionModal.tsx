@@ -104,7 +104,7 @@ export default function TransactionModal({
       reset({
         name: transaction.name,
         amount: transaction.amount,
-        date: format(new Date(transaction.date), "yyyy-MM-dd HH:mm:ss"),
+        date: format(new Date(transaction.date), "yyyy-MM-dd'T'HH:mm"),
         type: validType,
         categoryName: transaction.categoryName ?? "",
         categoryId: transaction.categoryId,
