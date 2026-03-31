@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import AssetCategoryLabel from "@/components/AssetCategoryLabel";
 import AssetEditButton from "@/components/AssetEditButton";
+import Card from "@/components/Card";
 import { Asset, AssetVendor, Category } from "@/types/domain";
 
 function sanitizeImageUrl(url?: string | null) {
@@ -40,11 +41,18 @@ export default function AssetHeader({
   }, [asset]);
 
   const vendorImage = sanitizeImageUrl(currentAsset.vendor.style?.image);
+  const currencySymbol =
+    typeof currentAsset.currency === "string"
+      ? currentAsset.currency
+      : currentAsset.currency.symbol;
+  const formattedValue = Intl.NumberFormat("hu-HU").format(currentAsset.value);
 
   return (
     <>
       <div className="flex justify-between w-full">
-        <h1>{currentAsset.name}</h1>
+        <div className="space-y-3">
+          <h1>{currentAsset.name}</h1>
+        </div>
         <AssetEditButton
           asset={currentAsset}
           categories={categories}
@@ -52,6 +60,12 @@ export default function AssetHeader({
           onSuccess={setCurrentAsset}
         />
       </div>
+      <Card className="flex flex-col sm:flex-row p-3 gap-4 items-center sm:w-fit">
+        <div className="text-lg">Total value: </div>
+        <div className="text-2xl font-semibold leading-none">
+          {formattedValue} {currencySymbol}
+        </div>
+      </Card>
 
       <div className="flex gap-4 items-center justify-between">
         {vendorImage ? (
