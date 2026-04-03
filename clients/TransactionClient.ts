@@ -14,12 +14,29 @@ export class TransactionClient {
     };
   }
 
-  async getByAssetId(id: ID): Promise<Transaction[]> {
-    const res = await fetch(`${this.baseUrl}/assets/${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      ...this.getFetchOptions(),
-    });
+  async getByAssetId(
+    id: ID,
+    query?: { from?: string; to?: string },
+  ): Promise<Transaction[]> {
+    const params = new URLSearchParams();
+
+    if (query?.from) {
+      params.set("from", query.from);
+    }
+
+    if (query?.to) {
+      params.set("to", query.to);
+    }
+
+    const queryString = params.toString();
+    const res = await fetch(
+      `/api/assets/${id}/assets${queryString ? `?${queryString}` : ""}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        ...this.getFetchOptions(),
+      },
+    );
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({}));

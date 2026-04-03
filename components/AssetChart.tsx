@@ -46,29 +46,24 @@ const RANGE_OPTIONS: { key: RangeKey; label: string }[] = [
   { key: "all", label: "All time" },
 ];
 
-const getRangeStartDate = (range: RangeKey, now: Date) => {
-  if (range === "all") {
-    return null;
-  }
-
-  const base = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  switch (range) {
-    case "1m":
-      return base;
-    case "3m":
-      return new Date(base.getFullYear(), base.getMonth() - 2, 1);
-    case "6m":
-      return new Date(base.getFullYear(), base.getMonth() - 5, 1);
-    case "1y":
-      return new Date(base.getFullYear(), base.getMonth() - 11, 1);
-    default:
-      return null;
-  }
+const RANGE_MONTHS: Record<Exclude<RangeKey, "all">, number> = {
+  "1m": 1,
+  "3m": 3,
+  "6m": 6,
+  "1y": 12,
 };
 
 const startOfDay = (value: Date) =>
   new Date(value.getFullYear(), value.getMonth(), value.getDate());
+
+const startOfMonth = (value: Date) =>
+  new Date(value.getFullYear(), value.getMonth(), 1);
+
+const endOfMonth = (value: Date) =>
+  new Date(value.getFullYear(), value.getMonth() + 1, 0);
+
+const addMonthsAtMonthStart = (value: Date, months: number) =>
+  new Date(value.getFullYear(), value.getMonth() + months, 1);
 
 const toDateKey = (value: Date) => {
   const year = value.getFullYear();
@@ -110,42 +105,72 @@ export default function AssetChart({
   title = "Net Cash Flow",
 }: AssetChartProps) {
   const [selectedRange, setSelectedRange] = useState<RangeKey>("1m");
+  const [anchorMonth, setAnchorMonth] = useState<Date>(
+    startOfMonth(new Date()),
+  );
 
-  const { labels, netData } = useMemo(() => {
-    const today = startOfDay(new Date());
-    const parsedTransactions = transactions
-      .map((transaction) => {
-        const transactionDate = new Date(transaction.date);
-        return Number.isNaN(transactionDate.getTime())
-          ? null
-          : {
-              ...transaction,
-              parsedDate: startOfDay(transactionDate),
-            };
-      })
-      .filter(
-        (transaction): transaction is Transaction & { parsedDate: Date } =>
-          transaction !== null,
-      );
+  const parsedTransactions = useMemo(
+    () =>
+      transactions
+        .map((transaction) => {
+          const transactionDate = new Date(transaction.date);
+          return Number.isNaN(transactionDate.getTime())
+            ? null
+            : {
+                ...transaction,
+                parsedDate: startOfDay(transactionDate),
+              };
+        })
+        .filter(
+          (transaction): transaction is Transaction & { parsedDate: Date } =>
+            transaction !== null,
+        ),
+    [transactions],
+  );
 
-    const earliestDate = parsedTransactions[0]
-      ? parsedTransactions
-          .map((transaction) => transaction.parsedDate.getTime())
-          .reduce((minValue, value) => Math.min(minValue, value), Infinity)
-      : null;
+  const earliestTransactionMonth = useMemo(() => {
+    if (parsedTransactions.length === 0) {
+      return startOfMonth(new Date());
+    }
 
-    const rangeStartDate = getRangeStartDate(selectedRange, today);
+    const minTime = parsedTransactions.reduce(
+      (acc, tx) => Math.min(acc, tx.parsedDate.getTime()),
+      Infinity,
+    );
+
+    return startOfMonth(new Date(minTime));
+  }, [parsedTransactions]);
+
+  const latestTransactionMonth = useMemo(() => {
+    if (parsedTransactions.length === 0) {
+      return startOfMonth(new Date());
+    }
+
+    const maxTime = parsedTransactions.reduce(
+      (acc, tx) => Math.max(acc, tx.parsedDate.getTime()),
+      -Infinity,
+    );
+
+    return startOfMonth(new Date(maxTime));
+  }, [parsedTransactions]);
+
+  const { labels, netData, startDate, endDate } = useMemo(() => {
     const startDate =
       selectedRange === "all"
-        ? earliestDate !== null
-          ? new Date(earliestDate)
-          : new Date(today.getFullYear(), today.getMonth(), 1)
-        : (rangeStartDate ??
-          new Date(today.getFullYear(), today.getMonth(), 1));
+        ? earliestTransactionMonth
+        : startOfMonth(
+            addMonthsAtMonthStart(
+              anchorMonth,
+              -(RANGE_MONTHS[selectedRange] - 1),
+            ),
+          );
 
-    const endDate = today;
+    const endDate =
+      selectedRange === "all"
+        ? endOfMonth(latestTransactionMonth)
+        : endOfMonth(anchorMonth);
+
     const labelsInRange = getDateRangeLabels(startDate, endDate);
-
     const netByDate = new Map<string, number>();
 
     for (const transaction of parsedTransactions) {
@@ -170,8 +195,37 @@ export default function AssetChart({
       netByDate.has(label) ? (netByDate.get(label) as number) : null,
     );
 
-    return { labels: labelsInRange, netData: values };
-  }, [selectedRange, transactions]);
+    return {
+      labels: labelsInRange,
+      netData: values,
+      startDate,
+      endDate,
+    };
+  }, [
+    anchorMonth,
+    earliestTransactionMonth,
+    latestTransactionMonth,
+    parsedTransactions,
+    selectedRange,
+  ]);
+
+  const handleRangeChange = (range: RangeKey) => {
+    setSelectedRange(range);
+
+    if (range !== "all") {
+      setAnchorMonth(startOfMonth(new Date()));
+    }
+  };
+
+  const handleStep = (direction: "prev" | "next") => {
+    if (selectedRange === "all") {
+      return;
+    }
+
+    const stepMonths = RANGE_MONTHS[selectedRange];
+    const delta = direction === "prev" ? -stepMonths : stepMonths;
+    setAnchorMonth((prev) => addMonthsAtMonthStart(prev, delta));
+  };
 
   const data: ChartData<"line"> = {
     labels,
@@ -204,7 +258,7 @@ export default function AssetChart({
         display: false,
       },
       title: {
-        display: true,
+        display: false,
         text: title,
       },
     },
@@ -212,6 +266,33 @@ export default function AssetChart({
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={selectedRange === "all"}
+          onClick={() => handleStep("prev")}
+        >
+          {"<"}
+        </Button>
+        <div className="text-center">
+          <div className="text-sm font-semibold text-gray-900">{title}</div>
+          <div className="text-xs text-gray-600">
+            {toDateKey(startDate)} - {toDateKey(endDate)}
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={selectedRange === "all"}
+          onClick={() => handleStep("next")}
+        >
+          {">"}
+        </Button>
+      </div>
+
       <div className="h-[350px]">
         <Line data={data} options={options} plugins={[whiteBackgroundPlugin]} />
       </div>
@@ -223,7 +304,7 @@ export default function AssetChart({
             type="button"
             variant={selectedRange === range.key ? "default" : "outline"}
             size="sm"
-            onClick={() => setSelectedRange(range.key)}
+            onClick={() => handleRangeChange(range.key)}
           >
             {range.label}
           </Button>

@@ -8,7 +8,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const transactions = await transactionService.getByAssetId(id);
+    const url = new URL(req.url);
+    const from = url.searchParams.get("from") || undefined;
+    const to = url.searchParams.get("to") || undefined;
+
+    const transactions = await transactionService.getByAssetId(id, {
+      from,
+      to,
+    });
     return NextResponse.json(transactions, { status: 200 });
   } catch (error) {
     const message =

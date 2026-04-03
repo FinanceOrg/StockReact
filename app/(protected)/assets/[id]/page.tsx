@@ -6,8 +6,13 @@ import { assetVendorService } from "@/lib/services/asset-vendor.service";
 import { assetService } from "@/lib/services/asset.service";
 import { transactionService } from "@/lib/services/transaction.service";
 
-export default async function Asset({ params }: { params: { id: string } }) {
+export default async function Asset({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
+
   const [asset, transactions, categories, vendors] = await Promise.all([
     assetService.getById(id),
     transactionService.getByAssetId(id),
