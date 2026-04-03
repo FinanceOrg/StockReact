@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { assetCategoryClient } from "@/clients/AssetCategoryClient";
+import { FormColorInputItem } from "@/components/input/color";
 import { FormInputItem } from "@/components/input/input";
 import DeleteConfirmDialog from "@/components/modal/DeleteConfirmDialog";
 import ModalActionFooter from "@/components/modal/ModalActionFooter";
@@ -167,67 +168,23 @@ export default function AssetCategoryModal({
                 placeholder="Category name"
               />
 
-              <div className="flex gap-4 items-end">
-                <FormInputItem
-                  control={form.control}
-                  name="color"
-                  label="Text color"
-                  placeholder="#000000"
-                />
-                <FormField
-                  control={form.control}
-                  name="color"
-                  render={({ field }) => (
-                    <FormItem className="shrink-0">
-                      <FormLabel className="sr-only">
-                        Text color picker
-                      </FormLabel>
-                      <FormControl>
-                        <input
-                          type="color"
-                          className="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
-                          value={field.value || "#000000"}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormColorInputItem
+                control={form.control}
+                name="color"
+                label="Text color"
+                placeholder="#000000"
+                pickerDefault="#000000"
+                pickerLabel="Text color picker"
+              />
 
-              <div className="flex gap-4 items-end">
-                <FormInputItem
-                  control={form.control}
-                  name="bgColor"
-                  label="Background color"
-                  placeholder="#ffffff"
-                />
-                <FormField
-                  control={form.control}
-                  name="bgColor"
-                  render={({ field }) => (
-                    <FormItem className="shrink-0">
-                      <FormLabel className="sr-only">
-                        Background color picker
-                      </FormLabel>
-                      <FormControl>
-                        <input
-                          type="color"
-                          className="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
-                          value={field.value || "#ffffff"}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormColorInputItem
+                control={form.control}
+                name="bgColor"
+                label="Background color"
+                placeholder="#ffffff"
+                pickerDefault="#ffffff"
+                pickerLabel="Background color picker"
+              />
 
               <FormField
                 control={form.control}

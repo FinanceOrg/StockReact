@@ -8,8 +8,8 @@ export default function AssetCategoryLabel({
   return (
     <div
       style={{
-        color: category.style?.color,
-        backgroundColor: category.style?.bgColor,
+        color: category.style?.color ?? undefined,
+        backgroundColor: category.style?.bgColor ?? undefined,
       }}
       className={`py-1 px-2 bg-gray-500 rounded-2xl h-8 w-fit`}
     >

@@ -1,4 +1,4 @@
-export interface StockCardDTO {
+﻿export interface StockCardDTO {
   id: number;
   name: string;
   value: number;
@@ -12,8 +12,10 @@ export interface StockCardDTO {
     id: number;
     name: string;
     style: {
-      color: string;
-      bgColor: string;
+      color?: string | null;
+      bgColor?: string | null;
+      accentColor?: string | null;
+      secondaryButtonColor?: string | null;
     };
     description: string;
   };
@@ -21,9 +23,11 @@ export interface StockCardDTO {
     id: number;
     name: string;
     style: {
-      color: string;
-      image: string;
-      bgColor: string;
+      color?: string | null;
+      image?: string | null;
+      bgColor?: string | null;
+      accentColor?: string | null;
+      secondaryButtonColor?: string | null;
     } | null;
     description: string;
   };

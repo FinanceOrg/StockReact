@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   ColumnDef,
@@ -24,6 +24,7 @@ import {
   numberRangeFilterFn,
 } from "@/components/table/ColumnFilterControls";
 import { Button } from "@/components/ui/button";
+import { getContrastTextColor } from "@/lib/utils";
 import { Asset, Transaction } from "@/types/domain";
 
 import TransactionModal from "./TransactionModal";
@@ -31,9 +32,13 @@ import TransactionModal from "./TransactionModal";
 export default function AssetTransactions({
   asset,
   transactions,
+  accentColor,
+  buttonColor,
 }: {
   asset: Asset;
   transactions: Transaction[];
+  accentColor?: string;
+  buttonColor?: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
@@ -167,14 +172,38 @@ export default function AssetTransactions({
     }
   };
 
+  const tableBackground = accentColor ?? "#FFFFFF";
+  const primaryButtonTextColor = buttonColor
+    ? getContrastTextColor(buttonColor)
+    : undefined;
+  const primaryButtonShadowStyle = {
+    boxShadow: "4px 4px 0 rgba(0,0,0,0.28)",
+  };
+
   return (
     <div>
       <div className="flex justify-end mb-4">
-        <Button onClick={() => openModal()}>Add Transaction</Button>
+        <Button
+          onClick={() => openModal()}
+          style={
+            buttonColor
+              ? {
+                  backgroundColor: buttonColor,
+                  color: primaryButtonTextColor,
+                  ...primaryButtonShadowStyle,
+                }
+              : undefined
+          }
+        >
+          Add Transaction
+        </Button>
       </div>
 
       <div className="mb-4">
-        <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
+        <div
+          className="overflow-hidden rounded-lg border border-gray-300 shadow-lg ring-1 ring-black/5"
+          style={{ backgroundColor: tableBackground }}
+        >
           <div className="border-b border-gray-200 px-4 py-3 text-sm font-semibold">
             Transactions
           </div>
@@ -183,7 +212,8 @@ export default function AssetTransactions({
             {table.getHeaderGroups().map((headerGroup) => (
               <div
                 key={headerGroup.id}
-                className="grid grid-cols-2 sm:grid-cols-4 border-b border-gray-200 bg-gray-50"
+                className="grid grid-cols-2 sm:grid-cols-4 border-b border-gray-200"
+                style={{ backgroundColor: "rgba(255,255,255,0.55)" }}
               >
                 {headerGroup.headers.map((header) => (
                   <div key={header.id} className="px-4 py-2 font-medium">
@@ -203,7 +233,8 @@ export default function AssetTransactions({
                 <div
                   key={tableRow.id}
                   onClick={() => openModal(tableRow.original)}
-                  className="cursor-pointer py-3 hover:bg-gray-50 sm:grid sm:grid-cols-4 sm:items-center sm:py-2 grid grid-cols-2"
+                  className="cursor-pointer py-3 sm:grid sm:grid-cols-4 sm:items-center sm:py-2 grid grid-cols-2"
+                  style={{ backgroundColor: "rgba(255,255,255,0.35)" }}
                 >
                   {tableRow.getVisibleCells().map((cell) => (
                     <div

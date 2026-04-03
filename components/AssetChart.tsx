@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   Chart as ChartJS,
@@ -18,6 +18,7 @@ import { useMemo, useState } from "react";
 import { Line } from "react-chartjs-2";
 
 import { Button } from "@/components/ui/button";
+import { getContrastTextColor } from "@/lib/utils";
 import { Transaction } from "@/types/domain";
 
 ChartJS.register(
@@ -34,6 +35,10 @@ ChartJS.register(
 type AssetChartProps = {
   transactions: Transaction[];
   title?: string;
+  accentColor?: string;
+  buttonColor?: string;
+  secondaryButtonColor?: string;
+  showSecondaryButtonShadow?: boolean;
 };
 
 type RangeKey = "1m" | "3m" | "6m" | "1y" | "all";
@@ -84,12 +89,14 @@ const getDateRangeLabels = (start: Date, end: Date) => {
   return labels;
 };
 
-const whiteBackgroundPlugin: Plugin<"line"> = {
-  id: "whiteBackground",
+const createChartAreaBackgroundPlugin = (
+  fillStyle: string,
+): Plugin<"line"> => ({
+  id: "chartAreaBackground",
   beforeDraw: (chart) => {
     const { ctx, chartArea } = chart;
     ctx.save();
-    ctx.fillStyle = "white";
+    ctx.fillStyle = fillStyle;
     ctx.fillRect(
       chartArea.left,
       chartArea.top,
@@ -98,11 +105,15 @@ const whiteBackgroundPlugin: Plugin<"line"> = {
     );
     ctx.restore();
   },
-};
+});
 
 export default function AssetChart({
   transactions,
   title = "Net Cash Flow",
+  accentColor,
+  buttonColor,
+  secondaryButtonColor,
+  showSecondaryButtonShadow = true,
 }: AssetChartProps) {
   const [selectedRange, setSelectedRange] = useState<RangeKey>("1m");
   const [anchorMonth, setAnchorMonth] = useState<Date>(
@@ -227,6 +238,22 @@ export default function AssetChart({
     setAnchorMonth((prev) => addMonthsAtMonthStart(prev, delta));
   };
 
+  const chartCardBackground = accentColor ?? "#FFFFFF";
+  const chartAreaBackground = accentColor ?? "#FFFFFF";
+  const primaryButtonBg = buttonColor;
+  const secondaryButtonBg = secondaryButtonColor ?? buttonColor;
+  const primaryButtonTextColor = primaryButtonBg
+    ? getContrastTextColor(primaryButtonBg)
+    : undefined;
+  const secondaryButtonTextColor = secondaryButtonColor
+    ? getContrastTextColor(secondaryButtonColor)
+    : primaryButtonTextColor;
+  const hasWhiteSecondaryButton =
+    secondaryButtonBg?.toLowerCase() === "#ffffff";
+  const buttonShadowStyle = showSecondaryButtonShadow
+    ? { boxShadow: "4px 4px 0 rgba(0,0,0,0.28)" }
+    : undefined;
+
   const data: ChartData<"line"> = {
     labels,
     datasets: [
@@ -241,6 +268,11 @@ export default function AssetChart({
       },
     ],
   };
+
+  const chartAreaBackgroundPlugin = useMemo(
+    () => createChartAreaBackgroundPlugin(chartAreaBackground),
+    [chartAreaBackground],
+  );
 
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -265,14 +297,27 @@ export default function AssetChart({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
+    <div
+      className="rounded-lg shadow-lg ring-1 ring-black/5 p-4"
+      style={{ backgroundColor: chartCardBackground }}
+    >
       <div className="mb-3 flex items-center justify-between gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
+          className={hasWhiteSecondaryButton ? undefined : "border-0"}
           disabled={selectedRange === "all"}
           onClick={() => handleStep("prev")}
+          style={
+            secondaryButtonBg
+              ? {
+                  backgroundColor: secondaryButtonBg,
+                  color: secondaryButtonTextColor,
+                  ...buttonShadowStyle,
+                }
+              : undefined
+          }
         >
           {"<"}
         </Button>
@@ -286,15 +331,29 @@ export default function AssetChart({
           type="button"
           variant="outline"
           size="sm"
+          className={hasWhiteSecondaryButton ? undefined : "border-0"}
           disabled={selectedRange === "all"}
           onClick={() => handleStep("next")}
+          style={
+            secondaryButtonBg
+              ? {
+                  backgroundColor: secondaryButtonBg,
+                  color: secondaryButtonTextColor,
+                  ...buttonShadowStyle,
+                }
+              : undefined
+          }
         >
           {">"}
         </Button>
       </div>
 
       <div className="h-[350px]">
-        <Line data={data} options={options} plugins={[whiteBackgroundPlugin]} />
+        <Line
+          data={data}
+          options={options}
+          plugins={[chartAreaBackgroundPlugin]}
+        />
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -304,7 +363,28 @@ export default function AssetChart({
             type="button"
             variant={selectedRange === range.key ? "default" : "outline"}
             size="sm"
+            className={
+              selectedRange === range.key || hasWhiteSecondaryButton
+                ? undefined
+                : "border-0"
+            }
             onClick={() => handleRangeChange(range.key)}
+            style={
+              selectedRange === range.key && primaryButtonBg
+                ? {
+                    backgroundColor: primaryButtonBg,
+                    color: primaryButtonTextColor,
+                    borderColor: primaryButtonBg,
+                    ...buttonShadowStyle,
+                  }
+                : selectedRange !== range.key && secondaryButtonBg
+                  ? {
+                      backgroundColor: secondaryButtonBg,
+                      color: secondaryButtonTextColor,
+                      ...buttonShadowStyle,
+                    }
+                  : undefined
+            }
           >
             {range.label}
           </Button>

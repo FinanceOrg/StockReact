@@ -1,7 +1,8 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 const optionalImageUrl = z.union([
   z.literal(""),
+  z.null(),
   z
     .string()
     .url("Must be a valid URL")
@@ -18,6 +19,28 @@ export const createVendorSchema = z.object({
       color: z
         .union([
           z.literal(""),
+          z.null(),
+          z.string().regex(/^#[0-9A-F]{6}$/i, "Invalid color format"),
+        ])
+        .optional(),
+      bgColor: z
+        .union([
+          z.literal(""),
+          z.null(),
+          z.string().regex(/^#[0-9A-F]{6}$/i, "Invalid color format"),
+        ])
+        .optional(),
+      accentColor: z
+        .union([
+          z.literal(""),
+          z.null(),
+          z.string().regex(/^#[0-9A-F]{6}$/i, "Invalid color format"),
+        ])
+        .optional(),
+      secondaryButtonColor: z
+        .union([
+          z.literal(""),
+          z.null(),
           z.string().regex(/^#[0-9A-F]{6}$/i, "Invalid color format"),
         ])
         .optional(),
@@ -28,13 +51,12 @@ export const createVendorSchema = z.object({
       if (!style) return undefined;
 
       const nextStyle = {
-        color: style.color || undefined,
-        image: style.image || undefined,
+        color: style.color || null,
+        bgColor: style.bgColor || null,
+        accentColor: style.accentColor || null,
+        secondaryButtonColor: style.secondaryButtonColor || null,
+        image: style.image || null,
       };
-
-      if (!nextStyle.color && !nextStyle.image) {
-        return undefined;
-      }
 
       return nextStyle;
     }),

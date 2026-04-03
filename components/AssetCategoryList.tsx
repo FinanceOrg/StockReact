@@ -60,8 +60,8 @@ export default function AssetCategoryList({
               <span
                 className="inline-flex min-w-14 shrink-0 justify-center rounded border border-black/10 px-2 py-1 text-xs"
                 style={{
-                  backgroundColor: row.original.style?.bgColor,
-                  color: row.original.style?.color,
+                  backgroundColor: row.original.style?.bgColor ?? undefined,
+                  color: row.original.style?.color ?? undefined,
                 }}
               >
                 Aa

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { assetVendorClient } from "@/clients/AssetVendorClient";
+import { FormColorInputItem } from "@/components/input/color";
 import { FormInputItem } from "@/components/input/input";
 import DeleteConfirmDialog from "@/components/modal/DeleteConfirmDialog";
 import ModalActionFooter from "@/components/modal/ModalActionFooter";
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import VendorStyleDrawingPreview from "@/components/VendorStyleDrawingPreview";
 import { AssetVendor, ID } from "@/types/domain";
 
 const safeImageUrl = z.union([
@@ -43,6 +45,24 @@ const safeImageUrl = z.union([
 const vendorSchema = z.object({
   name: z.string().min(1, "Name is required"),
   color: z.union([
+    z.literal(""),
+    z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a valid hex color (e.g. #FF5733)"),
+  ]),
+  bgColor: z.union([
+    z.literal(""),
+    z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a valid hex color (e.g. #FF5733)"),
+  ]),
+  accentColor: z.union([
+    z.literal(""),
+    z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a valid hex color (e.g. #FF5733)"),
+  ]),
+  secondaryButtonColor: z.union([
     z.literal(""),
     z
       .string()
@@ -79,12 +99,20 @@ export default function VendorModal({
     defaultValues: {
       name: "",
       color: "",
+      bgColor: "",
+      accentColor: "",
+      secondaryButtonColor: "",
       imageUrl: "",
       description: "",
     },
   });
 
   const imageUrl = form.watch("imageUrl");
+  const vendorName = form.watch("name");
+  const textColor = form.watch("color");
+  const backgroundColor = form.watch("bgColor");
+  const accentColor = form.watch("accentColor");
+  const secondaryButtonColor = form.watch("secondaryButtonColor");
 
   const {
     handleSubmit,
@@ -99,6 +127,9 @@ export default function VendorModal({
       reset({
         name: vendor.name,
         color: vendor.style?.color ?? "",
+        bgColor: vendor.style?.bgColor ?? "",
+        accentColor: vendor.style?.accentColor ?? "",
+        secondaryButtonColor: vendor.style?.secondaryButtonColor ?? "",
         imageUrl: vendor.style?.image ?? "",
         description: vendor.description ?? "",
       });
@@ -106,6 +137,9 @@ export default function VendorModal({
       reset({
         name: "",
         color: "",
+        bgColor: "",
+        accentColor: "",
+        secondaryButtonColor: "",
         imageUrl: "",
         description: "",
       });
@@ -114,14 +148,29 @@ export default function VendorModal({
 
   const onFormSubmit = async (data: FormValues) => {
     try {
-      const style = {
-        color: data.color || undefined,
-        image: data.imageUrl || undefined,
+      const normalizedStyle = {
+        color: data.color || null,
+        bgColor: data.bgColor || null,
+        accentColor: data.accentColor || null,
+        secondaryButtonColor: data.secondaryButtonColor || null,
+        image: data.imageUrl || null,
       };
+
+      const hasStyleValue = Object.values(normalizedStyle).some(Boolean);
 
       const payload = {
         name: data.name,
-        style: style.color || style.image ? style : undefined,
+        style: hasStyleValue
+          ? normalizedStyle
+          : vendor?.id
+            ? {
+                color: null,
+                bgColor: null,
+                accentColor: null,
+                secondaryButtonColor: null,
+                image: null,
+              }
+            : undefined,
         description: data.description,
       };
 
@@ -159,7 +208,7 @@ export default function VendorModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent className="sm:w-fit sm:max-w-fit">
           <DialogHeader>
             <DialogTitle>{isEdit ? "Update" : "Create"} vendor</DialogTitle>
             <DialogDescription>
@@ -210,31 +259,50 @@ export default function VendorModal({
                   </FormItem>
                 )}
               />
+              <div className="flex flex-col sm:flex-row gap-8 flex-wrap sm:flex-nowrap items-center">
+                <div className="flex flex-col gap-4 sm:w-fit items-center sm:items-start">
+                  <FormColorInputItem
+                    control={form.control}
+                    name="color"
+                    label="Text color"
+                    placeholder="#000000"
+                    pickerDefault="#000000"
+                    pickerLabel="Color picker"
+                  />
 
-              <div className="flex gap-4 items-end">
-                <FormInputItem
-                  control={form.control}
-                  name="color"
-                  label="Color"
-                  placeholder="#000000"
-                />
-                <FormField
-                  control={form.control}
-                  name="color"
-                  render={({ field }) => (
-                    <FormItem className="shrink-0">
-                      <FormLabel className="sr-only">Color picker</FormLabel>
-                      <FormControl>
-                        <input
-                          type="color"
-                          className="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
-                          value={field.value || "#000000"}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  <FormColorInputItem
+                    control={form.control}
+                    name="bgColor"
+                    label="Background color"
+                    placeholder="#ffffff"
+                    pickerDefault="#ffffff"
+                    pickerLabel="Background color picker"
+                  />
+
+                  <FormColorInputItem
+                    control={form.control}
+                    name="accentColor"
+                    label="Accent color"
+                    placeholder="#ffffff"
+                    pickerDefault="#ffffff"
+                    pickerLabel="Accent color picker"
+                  />
+
+                  <FormColorInputItem
+                    control={form.control}
+                    name="secondaryButtonColor"
+                    label="Secondary button color"
+                    placeholder="#ffffff"
+                    pickerDefault="#ffffff"
+                    pickerLabel="Secondary button color picker"
+                  />
+                </div>
+                <VendorStyleDrawingPreview
+                  vendorName={vendorName}
+                  color={textColor}
+                  bgColor={backgroundColor}
+                  accentColor={accentColor}
+                  secondaryButtonColor={secondaryButtonColor}
                 />
               </div>
 

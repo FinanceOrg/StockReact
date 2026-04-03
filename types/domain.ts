@@ -1,14 +1,16 @@
-// types/domain/shared.ts
+﻿// types/domain/shared.ts
 
 export type ID = number;
 
 export interface Style {
-  color?: string;
+  color?: string | null;
 }
 
 export interface CategoryStyle extends Style {
-  image?: string;
-  bgColor?: string;
+  image?: string | null;
+  bgColor?: string | null;
+  accentColor?: string | null;
+  secondaryButtonColor?: string | null;
 }
 
 export interface Currency {

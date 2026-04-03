@@ -1,11 +1,13 @@
-import { TransactionType } from "./domain";
+﻿import { TransactionType } from "./domain";
 export interface StyleDTO {
-  color: string;
+  color?: string | null;
 }
 
 export interface CategoryStyleDTO extends StyleDTO {
-  image: string;
-  bgColor: string;
+  image?: string | null;
+  bgColor?: string | null;
+  accentColor?: string | null;
+  secondaryButtonColor?: string | null;
 }
 
 export interface CurrencyDTO {
